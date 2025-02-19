@@ -1,47 +1,100 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GoCreative ERP</title>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <!-- Include Tailwind CSS & Custom JS -->
+    @vite(['resources/css/auth.css', 'resources/js/auth.js'])
+</head>
+<body class="dark flex items-center justify-center min-h-screen">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+    <!-- Dark/Light Mode Toggle Button -->
+    <button id="mode-toggle" class="mode-toggle absolute top-6 right-6">
+        🌙
+    </button>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <div class="auth-container">
+        <!-- Welcome Message -->
+        <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
+        <p class="text-gray-400 mb-6">Login to your GoCreative ERP</p>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+        <form action="/login" method="POST">
+            <!-- Username/Email -->
+            <div class="auth-column">
+                <label class="block text-left text-gray-400 mb-1">Username/Email:</label>
+                <input type="text" class="auth-input" name="username" required>
+            </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            <!-- Password -->
+            <div class="auth-column">
+                <label class="block text-left text-gray-400 mb-1">Password:</label>
+                <div class="relative">
+                    <input type="password" class="auth-input" name="password" id="password-field" required>
+                    <button type="button" id="toggle-password" class="password-toggle absolute right-4 top-3 text-gray-400">
+                        👁️
+                    </button>
+                </div>
+            </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex justify-between items-center mt-4 text-sm">
+                <label class="flex items-center text-gray-400">
+                    <input type="checkbox" class="mr-2" name="remember">
+                    Remember Me
+                </label>
+                <a href="/forgot-password" class="auth-link">Forgot Password?</a>
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+            <!-- Login Button -->
+            <button type="submit" class="auth-button mt-6">Login</button>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+            <!-- Register Button -->
+            <p class="mt-4 text-sm text-gray-400">
+                Don't have an account? <a href="/register" class="auth-link">Register</a>
+            </p>
+        </form>
+    </div>
+
+    <script>
+        // Show/Hide Password Feature
+        document.getElementById("toggle-password").addEventListener("click", function () {
+            const passwordField = document.getElementById("password-field");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                this.innerText = "🙈"; // Change to Hide icon
+            } else {
+                passwordField.type = "password";
+                this.innerText = "👁️"; // Change back to Show icon
+            }
+        });
+
+        // Dark/Light Mode Toggle
+        const modeToggle = document.getElementById("mode-toggle");
+        const body = document.body;
+
+        // Load saved mode
+        if (localStorage.getItem("theme") === "light") {
+            body.classList.remove("dark");
+            modeToggle.innerText = "☀️";
+        } else {
+            body.classList.add("dark");
+            modeToggle.innerText = "🌙";
+        }
+
+        // Toggle Mode
+        modeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            if (body.classList.contains("dark")) {
+                localStorage.setItem("theme", "dark");
+                modeToggle.innerText = "🌙";
+            } else {
+                localStorage.setItem("theme", "light");
+                modeToggle.innerText = "☀️";
+            }
+        });
+    </script>
+
+</body>
+</html>
