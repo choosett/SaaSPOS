@@ -1,5 +1,3 @@
-// resources/js/auth.js
-
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Auth Page Loaded");
 
@@ -7,50 +5,67 @@ document.addEventListener("DOMContentLoaded", function () {
     const firstInput = document.querySelector(".auth-input");
     if (firstInput) firstInput.focus();
 
+    // Password Show/Hide Functionality
+    function setupPasswordToggle() {
+        document.querySelectorAll(".password-wrapper").forEach(wrapper => {
+            const passwordInput = wrapper.querySelector(".auth-input[type='password']");
+            const toggleIcon = wrapper.querySelector(".toggle-password");
+
+            if (passwordInput && toggleIcon) {
+                toggleIcon.addEventListener("click", function () {
+                    if (passwordInput.type === "password") {
+                        passwordInput.type = "text";
+                        toggleIcon.innerHTML = "🙈"; // Change icon to indicate it's visible
+                    } else {
+                        passwordInput.type = "password";
+                        toggleIcon.innerHTML = "👁️"; // Change icon back
+                    }
+                });
+            }
+        });
+    }
+
+    setupPasswordToggle(); // Call the function to apply functionality
+
     // Multi-step form navigation
     const steps = document.querySelectorAll(".step-content");
     const stepIndicators = document.querySelectorAll(".step-indicator");
     const nextButtons = document.querySelectorAll(".next-btn");
     const prevButtons = document.querySelectorAll(".prev-btn");
-
+    const form = document.getElementById("registration-form");
     let currentStep = 0;
 
     function showStep(step) {
-        // Hide all steps & remove active class
+        if (!steps[step]) return;
+
         steps.forEach((s, index) => {
             s.classList.toggle("hidden", index !== step);
             stepIndicators[index].classList.toggle("active", index === step);
         });
 
-        // Scroll to the form smoothly
         document.querySelector(".auth-container").scrollIntoView({ behavior: "smooth" });
 
         currentStep = step;
     }
 
-    // Handle Next Button Click
     nextButtons.forEach((button) => {
         button.addEventListener("click", () => {
             if (validateStep(currentStep)) {
                 if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    showStep(currentStep);
+                    showStep(++currentStep);
                 }
             }
         });
     });
 
-    // Handle Previous Button Click
     prevButtons.forEach((button) => {
         button.addEventListener("click", () => {
             if (currentStep > 0) {
-                currentStep--;
-                showStep(currentStep);
+                showStep(--currentStep);
             }
         });
     });
 
-    // Form validation function
     function validateStep(step) {
         let valid = true;
         const requiredFields = steps[step].querySelectorAll("[required]");
@@ -71,29 +86,26 @@ document.addEventListener("DOMContentLoaded", function () {
         return valid;
     }
 
-    // Handle form submission validation
-    const form = document.getElementById("registration-form");
     form.addEventListener("submit", function (event) {
         if (!validateStep(currentStep)) {
             event.preventDefault();
         }
     });
 
-    // Show first step initially
     showStep(currentStep);
 
-    // Automatically open date picker when clicking on "Start Date" or "Financial Year Start Month"
     function enableAutoDatePicker() {
         const dateInputs = document.querySelectorAll('input[type="date"], input[type="month"]');
 
         dateInputs.forEach((input) => {
             input.addEventListener("focus", () => {
-                input.showPicker(); // Open calendar when input is clicked
+                if (input.showPicker) {
+                    input.showPicker();
+                }
             });
         });
     }
 
-    // Initialize the date picker function
     enableAutoDatePicker();
 
     // Dark Mode / Day Mode Toggle
@@ -104,14 +116,12 @@ document.addEventListener("DOMContentLoaded", function () {
         body.classList.toggle("dark");
         body.classList.toggle("light");
 
-        // Save the preference in localStorage
         localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
     }
 
     if (modeToggle) {
         modeToggle.addEventListener("click", toggleMode);
 
-        // Load the saved theme preference from localStorage
         if (localStorage.getItem("theme") === "light") {
             body.classList.remove("dark");
             body.classList.add("light");

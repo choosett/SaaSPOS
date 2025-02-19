@@ -1,100 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - GoCreative ERP</title>
+@extends('layouts.auth')
 
-    <!-- Include Tailwind CSS & Custom JS -->
-    @vite(['resources/css/auth.css', 'resources/js/auth.js'])
-</head>
-<body class="dark flex items-center justify-center min-h-screen">
+@section('title', 'Login')
 
-    <!-- Dark/Light Mode Toggle Button -->
-    <button id="mode-toggle" class="mode-toggle absolute top-6 right-6">
-        🌙
-    </button>
+@section('content')
+<div class="mode-toggle">
+    <span id="mode-text">Day Mode</span>
+    <label class="switch">
+        <input type="checkbox" id="mode-toggle">
+        <span class="slider round"></span>
+    </label>
+</div>
 
-    <div class="auth-container">
-        <!-- Welcome Message -->
-        <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
-        <p class="text-gray-400 mb-6">Login to your GoCreative ERP</p>
+<div class="login-container"> <!-- Using login-container instead of auth-container -->
+    <h2 class="pos-title">Welcome Back</h2>
+    <p class="pos-slogan">Login to your GoCreative ERP</p>
 
-        <form action="/login" method="POST">
-            <!-- Username/Email -->
-            <div class="auth-column">
-                <label class="block text-left text-gray-400 mb-1">Username/Email:</label>
-                <input type="text" class="auth-input" name="username" required>
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
+
+        <!-- Username/Email Field with Icon -->
+        <div class="form-group">
+            <div class="auth-input-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="email" name="email" class="auth-input pl-10" placeholder="Username/Email" required autofocus>
             </div>
+        </div>
 
-            <!-- Password -->
-            <div class="auth-column">
-                <label class="block text-left text-gray-400 mb-1">Password:</label>
-                <div class="relative">
-                    <input type="password" class="auth-input" name="password" id="password-field" required>
-                    <button type="button" id="toggle-password" class="password-toggle absolute right-4 top-3 text-gray-400">
-                        👁️
-                    </button>
-                </div>
+        <!-- Password Field with Icon and Show/Hide Feature -->
+        <div class="form-group">
+            <div class="auth-input-wrapper relative">
+                <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="password" id="password" name="password" class="auth-input pl-10 pr-10" placeholder="Password" required>
+                <span class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">👁️</span>
             </div>
+        </div>
 
-            <!-- Remember Me & Forgot Password -->
-            <div class="flex justify-between items-center mt-4 text-sm">
-                <label class="flex items-center text-gray-400">
-                    <input type="checkbox" class="mr-2" name="remember">
-                    Remember Me
-                </label>
-                <a href="/forgot-password" class="auth-link">Forgot Password?</a>
-            </div>
+        <!-- Remember Me & Forgot Password -->
+        <div class="flex justify-between items-center mt-3 text-sm">
+            <label class="flex items-center">
+                <input type="checkbox" id="remember" name="remember" class="mr-2">
+                Remember Me
+            </label>
+            <a href="{{ route('password.request') }}" class="auth-link">Forgot Password?</a>
+        </div>
 
-            <!-- Login Button -->
-            <button type="submit" class="auth-button mt-6">Login</button>
+        <!-- Login & Register Buttons -->
+        <div class="auth-buttons">
+            <button type="submit" class="auth-button">Login</button>
+            <a href="{{ route('register') }}" class="auth-button-secondary text-center">Register</a>
+        </div>
+    </form>
+</div>
 
-            <!-- Register Button -->
-            <p class="mt-4 text-sm text-gray-400">
-                Don't have an account? <a href="/register" class="auth-link">Register</a>
-            </p>
-        </form>
-    </div>
+<script>
+    // Toggle Password Visibility
+    document.querySelector('.toggle-password').addEventListener('click', function() {
+        let passwordField = document.getElementById('password');
+        passwordField.type = passwordField.type === 'password' ? 'text' : 'password';
+    });
 
-    <script>
-        // Show/Hide Password Feature
-        document.getElementById("toggle-password").addEventListener("click", function () {
-            const passwordField = document.getElementById("password-field");
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                this.innerText = "🙈"; // Change to Hide icon
-            } else {
-                passwordField.type = "password";
-                this.innerText = "👁️"; // Change back to Show icon
-            }
-        });
+    // Day/Night Mode Toggle
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+    const modeText = document.getElementById('mode-text');
 
-        // Dark/Light Mode Toggle
-        const modeToggle = document.getElementById("mode-toggle");
-        const body = document.body;
-
-        // Load saved mode
-        if (localStorage.getItem("theme") === "light") {
-            body.classList.remove("dark");
-            modeToggle.innerText = "☀️";
+    modeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            body.classList.add('dark');
+            body.classList.remove('light');
+            modeText.innerText = "Night Mode";
+            localStorage.setItem('theme', 'dark');
         } else {
-            body.classList.add("dark");
-            modeToggle.innerText = "🌙";
+            body.classList.add('light');
+            body.classList.remove('dark');
+            modeText.innerText = "Day Mode";
+            localStorage.setItem('theme', 'light');
         }
+    });
 
-        // Toggle Mode
-        modeToggle.addEventListener("click", () => {
-            body.classList.toggle("dark");
-            if (body.classList.contains("dark")) {
-                localStorage.setItem("theme", "dark");
-                modeToggle.innerText = "🌙";
-            } else {
-                localStorage.setItem("theme", "light");
-                modeToggle.innerText = "☀️";
-            }
-        });
-    </script>
-
-</body>
-</html>
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark');
+        modeToggle.checked = true;
+        modeText.innerText = "Night Mode";
+    } else {
+        body.classList.add('light');
+        modeText.innerText = "Day Mode";
+    }
+</script>
+@endsection

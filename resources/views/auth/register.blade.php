@@ -200,6 +200,6 @@
     </div>
     
 
-    <script src="/resources/js/auth.js"></script>
+    
 </body>
 </html>

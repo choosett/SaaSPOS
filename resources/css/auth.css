@@ -1,3 +1,5 @@
+/* ========================== GENERAL STYLES ========================== */
+
 /* Import Tailwind */
 @tailwind base;
 @tailwind components;
@@ -18,7 +20,9 @@ body.light {
     @apply bg-gray-50 text-gray-900;
 }
 
-/* Form Container */
+/* ========================== REGISTER PAGE STYLES ========================== */
+
+/* Register Page - Larger Form */
 .auth-container {
     max-width: 850px;
     @apply w-full p-8 rounded-lg shadow-2xl text-center transition-colors duration-300;
@@ -33,6 +37,35 @@ body.dark .auth-container {
 body.light .auth-container {
     @apply bg-white shadow-md border border-gray-200;
 }
+
+/* ========================== LOGIN PAGE STYLES ========================== */
+
+/* Login Page - Smaller Form */
+.login-container {
+    max-width: 450px; /* Smaller than register */
+    @apply w-full p-6 rounded-lg shadow-lg text-center transition-colors duration-300;
+}
+
+body.login-page .auth-container {
+    max-width: 450px;
+}
+
+/* Dark Mode */
+body.dark .login-container {
+    @apply bg-gray-800;
+}
+
+/* Light Mode */
+body.light .login-container {
+    @apply bg-white shadow-md border border-gray-200;
+}
+
+/* Increase Spacing Between Username & Password Inputs */
+.login-container .form-group {
+    @apply mb-6; /* Increased spacing for login page */
+}
+
+/* ========================== HEADER STYLES ========================== */
 
 /* POS Name and Slogan */
 .pos-title {
@@ -54,7 +87,8 @@ body.light .pos-slogan {
     @apply text-gray-600;
 }
 
-/* Step Indicators */
+/* ========================== STEP INDICATOR ========================== */
+
 .step-indicators {
     @apply flex justify-between mb-6 px-4;
 }
@@ -80,7 +114,8 @@ body.light .step-indicator:not(.active) {
     @apply bg-gray-300 text-gray-700;
 }
 
-/* Input Field Styles */
+/* ========================== INPUT FIELD STYLES ========================== */
+
 .auth-input {
     @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:outline-none transition-colors duration-300 text-sm;
 }
@@ -91,6 +126,22 @@ body.light .auth-input {
     @apply border-gray-300 bg-gray-100 text-gray-900 focus:ring-[#0e3ea8];
 }
 
+/* Input Icon Wrapper */
+.auth-input-wrapper {
+    @apply relative flex items-center;
+}
+.auth-input-wrapper i {
+    @apply absolute left-3 text-gray-400;
+}
+.auth-input {
+    @apply w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:outline-none transition-colors duration-300;
+}
+
+/* Increase spacing between input fields in login page */
+.login-container .auth-input-wrapper {
+    @apply mb-4; /* Extra spacing for better layout */
+}
+
 /* Reduce input field spacing */
 .auth-row {
     @apply flex flex-wrap -mx-1;
@@ -99,7 +150,8 @@ body.light .auth-input {
     @apply w-full md:w-1/2 px-1 mt-2;
 }
 
-/* Button Styles */
+/* ========================== BUTTON STYLES ========================== */
+
 .auth-button, .auth-button-secondary {
     @apply w-full py-3 rounded-[1.375rem] font-semibold transition duration-300 text-sm;
 }
@@ -122,7 +174,7 @@ body.light .auth-button-secondary {
     @apply bg-gray-400 text-gray-900 hover:bg-gray-500;
 }
 
-/* Fix Button Spacing (Previous & Register in 2 Columns) */
+/* Fix Button Spacing (Login & Register buttons in two columns) */
 .auth-buttons {
     @apply w-full flex flex-wrap md:flex-nowrap justify-between mt-6 gap-6;
 }
@@ -134,17 +186,14 @@ body.light .auth-button-secondary {
     @apply w-full;
 }
 
-/* Adjust input spacing */
-.auth-input {
-    @apply mb-3;
-}
+/* ========================== FORM SPACING ========================== */
 
-/* Section Spacing */
 .step-content {
     @apply mt-8;
 }
 
-/* Sign In Link */
+/* ========================== SIGN-IN LINK ========================== */
+
 .auth-link {
     @apply text-blue-400 hover:underline;
 }
@@ -155,36 +204,13 @@ body.light .auth-link {
     @apply text-[#0e3ea8];
 }
 
-/* Mode Toggle Button */
+/* ========================== DARK/LIGHT MODE TOGGLE ========================== */
+
 .mode-toggle {
     @apply absolute top-6 right-6 px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer transition duration-300;
 }
 body.light .mode-toggle {
     @apply bg-gray-300 text-gray-900;
 }
-/* Wrapper for input fields with icons */
-.auth-input-wrapper {
-    @apply relative flex items-center;
-}
-
-/* Style for icons inside input fields */
-.auth-input-wrapper i {
-    @apply absolute left-3 text-gray-400;
-}
-
-/* Adjust input padding to make space for icons */
-.auth-input {
-    @apply w-full pl-10 pr-4 py-2 border border-gray-600 rounded-md 
-           focus:ring-2 focus:ring-blue-500 focus:outline-none 
-           bg-gray-700 text-white;
-}
-
-
-
-
-
-
-
-
 
 
