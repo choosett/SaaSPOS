@@ -6,6 +6,11 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\RegisteredUserController;
+
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
 
 // ✅ Home Page
 Route::get('/', function () {
