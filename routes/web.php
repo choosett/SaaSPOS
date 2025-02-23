@@ -6,8 +6,20 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DashboardController;
+
+
+// ✅ Ensure the route is defined
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+
 
 // ✅ Home Page
 Route::get('/', function () {
@@ -35,25 +47,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ✅ Role-Based Routes (Admin, Manager, Cashier)
-Route::middleware(['auth'])->group(function () {
-    // Admin Routes
-    Route::middleware(['role:admin'])->group(function () {
-        Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports');
-    });
+// ✅ User Management (Admin Access)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 
-    // Manager Routes
-    Route::middleware(['role:manager'])->group(function () {
-        Route::get('/sales', [SalesController::class, 'index'])->name('sales');
-    });
+    // 🔹 User Management Routes
+    Route::resource('users', UserController::class);
+    Route::resource('roles', RoleController::class);
 
-    // Cashier Routes
-    Route::middleware(['role:cashier'])->group(function () {
-        Route::get('/pos', function () {
-            return view('pos');
-        })->name('pos');
-    });
+    // 🔹 Contacts Routes
+    Route::resource('contacts', ContactController::class);
+});
+
+// ✅ Manager Routes
+Route::middleware(['auth', 'role:manager'])->group(function () {
+    Route::get('/sales', [SalesController::class, 'index'])->name('sales');
+});
+
+// ✅ Cashier Routes
+Route::middleware(['auth', 'role:cashier'])->group(function () {
+    Route::get('/pos', function () {
+        return view('pos');
+    })->name('pos');
 });
 
 // ✅ Include Additional Authentication Routes

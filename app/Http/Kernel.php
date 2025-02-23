@@ -18,15 +18,12 @@ use Illuminate\Http\Middleware\TrustHosts;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Middleware\ValidateSignature;
 use Illuminate\Http\Middleware\HandleCors;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful; // ✅ Added for Sanctum API Authentication
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 
 class Kernel extends HttpKernel
 {
-    /**
-     * Global middleware (applies to all routes).
-     */
     protected $middleware = [
         TrustProxies::class,
         TrustHosts::class,
@@ -41,9 +38,6 @@ class Kernel extends HttpKernel
         ConvertEmptyStringsToNull::class,
     ];
 
-    /**
-     * Route Middleware Groups.
-     */
     protected $middlewareGroups = [
         'web' => [
             StartSession::class,
@@ -54,14 +48,11 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            EnsureFrontendRequestsAreStateful::class,  // Required for Sanctum API authentication
+            EnsureFrontendRequestsAreStateful::class,  // ✅ Now added for Sanctum authentication
             SubstituteBindings::class,
         ],
     ];
 
-    /**
-     * Individual Route Middleware.
-     */
     protected $middlewareAliases = [
         'auth' => Authenticate::class,
         'auth.basic' => Authenticate::class . ':basic',
