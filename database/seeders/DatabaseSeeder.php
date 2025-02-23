@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use App\Models\Business;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,17 +33,31 @@ class DatabaseSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // ✅ Assign permissions to roles
-        $admin->syncPermissions(['view dashboard', 'manage users', 'view reports']);
-        $manager->syncPermissions(['view dashboard', 'process sales']);
-        $cashier->syncPermissions(['process sales']);
+        // ✅ Create a test business if it doesn't exist
+        $business = Business::firstOrCreate(
+            ['business_id' => 'BIZ12345'], // Check by business_id
+            [
+                'business_name' => 'GoCreative',
+                'start_date' => now(), // ✅ Change to match your schema
+                'currency' => 'USD',
+                'business_contact' => '0123456789',
+                'district' => 'Dhaka',
+                'business_address' => '123 Business Street',
+                'zip_code' => '1000',
+                'financial_year' => '2025', // ✅ Correct column name
+                'stock_method' => 'FIFO', // ✅ Enum values match schema
+            ]
+        );
 
         // ✅ Create a test admin user if it doesn't exist
         $user = User::firstOrCreate(
             ['email' => 'admin@example.com'], // Check by email
             [
-                'name' => 'Admin User',
-                'password' => bcrypt('password123'), // Change to a secure password
+                'business_id' => $business->business_id, // ✅ Now linked correctly
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'username' => 'admin',
+                'password' => Hash::make('password123'),
             ]
         );
 
