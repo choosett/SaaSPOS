@@ -3,11 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Role;
 
 class RoleController extends Controller
 {
     public function index()
     {
-        return view('roles.index'); // Ensure the view exists in `resources/views/roles/index.blade.php`
+        $roles = Role::all(); // Fetch all roles from database
+        return view('UserManagement.roles', compact('roles'));
+    }
+
+    public function create()
+    {
+        return view('UserManagement.roles-create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name',
+        ]);
+
+        Role::create($request->all());
+        return redirect()->route('roles.index')->with('success', 'Role created successfully.');
+    }
+
+    public function edit(Role $role)
+    {
+        return view('UserManagement.roles-edit', compact('role'));
+    }
+
+    public function update(Request $request, Role $role)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name,'.$role->id,
+        ]);
+
+        $role->update($request->all());
+        return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
+    }
+
+    public function destroy(Role $role)
+    {
+        $role->delete();
+        return redirect()->route('roles.index')->with('success', 'Role deleted successfully.');
     }
 }

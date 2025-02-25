@@ -4,25 +4,30 @@
     <!-- USER INFO SECTION -->
     <div class="p-4 text-center border-b border-[#cbd5e1]">
         <div class="flex flex-col items-center bg-gray-100 p-4 rounded-lg">
-            <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" 
+            <img src="{{ $user && $user->avatar ? asset('storage/' . $user->avatar) : 'https://cdn-icons-png.flaticon.com/512/147/147144.png' }}" 
                  alt="User Avatar" class="rounded-full w-16 h-16">
-            <h2 class="mt-2 font-bold text-gray-800 text-sm">Rupert Ratke</h2>
-            <p class="text-gray-500 text-xs">admin@test.com</p>
+            <h2 class="mt-2 font-bold text-gray-800 text-sm">{{ $user ? $user->first_name . ' ' . ($user->last_name ?? '') : 'Guest User' }}</h2>
+            <p class="text-gray-500 text-xs">{{ $user ? $user->email : 'Not Logged In' }}</p>
 
             <!-- Business ID (More Visible) -->
             <p class="text-gray-700 text-sm font-bold bg-gray-200 px-3 py-1 rounded-md mt-2">
-                Business ID: 56373733
+                Business ID: {{ $user->business_id ?? 'N/A' }}
             </p>
         </div>
 
         <!-- Buttons -->
         <div class="mt-3 flex justify-center space-x-2">
-            <a href="#" class="flex items-center px-3 py-1.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-md hover:bg-gray-200 transition">
-                <span class="material-icons text-gray-600 text-sm mr-1">person</span> Profile
+            <a href="{{ route('profile.show', ['view' => 'profile.index']) }}" class="flex items-center px-3 py-1.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+                <span class="material-icons text-gray-500 text-sm mr-1">person</span> Profile
             </a>
-            <a href="#" class="flex items-center px-3 py-1.5 text-sm font-semibold text-red-600 border border-red-300 rounded-md hover:bg-red-100 transition">
-                <span class="material-icons text-red-500 text-sm mr-1">logout</span> Logout
-            </a>
+            <!-- Logout Button -->
+            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                @csrf
+                <button type="submit" class="flex items-center px-3 py-1.5 text-sm font-semibold text-red-600 border border-red-300 rounded-md hover:bg-red-100 transition w-full text-left">
+                    <span class="material-icons text-red-500 text-sm mr-1">logout</span>
+                    Logout
+                </button>
+            </form>
         </div>
     </div>
 
@@ -31,11 +36,12 @@
         <ul id="sidebar-menu" class="space-y-1">
             @php
                 $menus = [
-                    ["name" => "Dashboard", "icon" => "dashboard", "link" => "#"],
-                    ["name" => "User Management", "icon" => "group", "submenu" => [
-                        ["name" => "Users", "link" => "#"],
-                        ["name" => "Roles", "link" => "#"]
+                    ["name" => "Dashboard", "icon" => "dashboard", "link" => route('dashboard')],
+                            ["name" => "User Management", "icon" => "group", "submenu" => [
+                                ["name" => "Users", "link" => route('users.index')], // ✅ Correct route
+        ["name" => "Roles", "link" => route('roles.index')]  // ✅ Correct route
                     ]],
+
                     ["name" => "Contacts", "icon" => "contacts", "submenu" => [
                         ["name" => "Suppliers", "link" => "#"],
                         ["name" => "Customers", "link" => "#"],
@@ -55,6 +61,7 @@
                         ["name" => "Categories", "link" => "#"],
                         ["name" => "Brands", "link" => "#"],
                         ["name" => "Warranties", "link" => "#"]
+                        
                     ]],
                     ["name" => "Purchase", "icon" => "shopping_cart", "submenu" => [
                         ["name" => "List Purchase", "link" => "#"],
@@ -109,7 +116,6 @@
                     ]]
                 ];
             @endphp
-
             @foreach ($menus as $menu)
                 <li>
                     <a href="{{ $menu['link'] ?? '#' }}" class="flex items-center text-gray-600 font-semibold text-sm px-3 py-2 rounded-md hover:bg-gray-200 transition @if(isset($menu['submenu'])) has-arrow @endif">

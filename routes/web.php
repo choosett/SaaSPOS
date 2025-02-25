@@ -13,13 +13,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 
-
 // ✅ Ensure the route is defined
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
-
-
 
 // ✅ Home Page
 Route::get('/', function () {
@@ -42,9 +39,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // ✅ Profile Routes (Requires Authentication)
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', function () {
+        return view('profile.profile');
+    })->name('profile.show'); // View profile
+    
+    Route::get('/profile/edit', function () {
+        return view('profile.profile-edit');
+    })->name('profile.edit'); // Edit profile
+    
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Update profile
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // Delete profile
 });
 
 // ✅ User Management (Admin Access)
@@ -55,9 +59,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // 🔹 User Management Routes
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
-
-    // 🔹 Contacts Routes
-    Route::resource('contacts', ContactController::class);
 });
 
 // ✅ Manager Routes
@@ -72,5 +73,19 @@ Route::middleware(['auth', 'role:cashier'])->group(function () {
     })->name('pos');
 });
 
+// ✅ Role Management Route (FIXED)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('roles', RoleController::class); // ✅ Generates all CRUD routes correctly
+});
+
+
 // ✅ Include Additional Authentication Routes
 require __DIR__.'/auth.php';
+
+Route::get('/roles', function () {
+    return view('UserManagement.roles');
+})->name('roles.index');
+
+Route::get('/users', function () {
+    return view('UserManagement.users');
+})->name('users.index');
