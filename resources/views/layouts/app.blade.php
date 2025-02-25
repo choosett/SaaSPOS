@@ -4,28 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') - POS SaaS</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <!-- Google Material Icons -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <header class="bg-blue-900 text-white p-4 flex items-center shadow-md relative">
+    <!-- ✅ Toggle Button (Aligned Left of 'Perfex' on Desktop) -->
+    <button id="toggleSidebar" class="absolute left-16 md:left-64 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-md transition-all duration-300">
+        <span id="toggleIcon" class="material-icons">menu</span>
+    </button>
     
+    <!-- ✅ Shift 'Perfex' text right to keep spacing correct -->
+    <h1 class="ml-16 md:ml-20 text-lg font-bold">Perfex</h1>
+</header>
+
+    <style>
+        /* ✅ Sidebar Defaults */
+        #sidebar {
+            transform: translateX(0); /* ✅ Sidebar Open Initially */
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            width: 260px;
+            background: #f4f4f5;
+        }
+
+        /* ✅ Hide Sidebar on Mobile by Default */
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* ✅ When Sidebar is Opened */
+        .sidebar-open #sidebar {
+            transform: translateX(0);
+        }
+
+        /* ✅ Main Content Adjusts Dynamically */
+        #mainContent {
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        /* ✅ Desktop Mode */
+        @media (min-width: 769px) {
+            .sidebar-open #mainContent {
+                margin-left: 260px; /* ✅ Sidebar Open */
+                width: calc(100% - 260px);
+            }
+
+            .sidebar-closed #mainContent {
+                margin-left: 0; /* ✅ Sidebar Closed */
+                width: 100%;
+            }
+        }
+
+        /* ✅ Mobile Mode - Always Full Width */
+        @media (max-width: 768px) {
+            #mainContent {
+                width: 100%;
+            }
+        }
+
+        /* ✅ Toggle Button Adjustments */
+        #toggleSidebar {
+            position: absolute;
+            transition: left 0.3s ease-in-out;
+        }
+
+        /* ✅ Sidebar Open - Toggle Stays Next to Sidebar */
+        .sidebar-open #toggleSidebar {
+            left: 260px; /* ✅ Moves to Sidebar Edge */
+        }
+
+        /* ✅ Sidebar Closed - Toggle Returns to Default */
+        .sidebar-closed #toggleSidebar {
+            left: 15px;
+        }
+    </style>
 </head>
-<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+<body class="font-sans antialiased bg-gray-100 text-gray-900 sidebar-open"> <!-- ✅ Sidebar Open on Desktop -->
 
     <div class="flex h-screen">
-        <!-- Sidebar -->
+        <!-- ✅ Sidebar -->
         @include('components.sidebar')
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col">
-            <!-- Header -->
-            <header class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-md">
-                <h1 class="text-lg font-bold"></h1>
-                
-            </header>
+        <!-- ✅ Main Content -->
+        <div id="mainContent" class="flex-1 flex flex-col">
+            
+            <!-- ✅ Header with Toggle Button -->
+        
 
-            <!-- Page Content -->
+            <!-- ✅ Page Content -->
             <main class="p-6 overflow-y-auto flex-1">
                 @yield('content')
             </main>
@@ -33,8 +107,34 @@
     </div>
 
     <script>
-        document.getElementById('sidebarToggle').addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("✅ Sidebar Toggle Loaded!");
+
+            // ✅ Sidebar Toggle Function
+            function toggleSidebar() {
+                document.body.classList.toggle("sidebar-open");
+                document.body.classList.toggle("sidebar-closed");
+            }
+
+            // ✅ Attach Click Event for Sidebar Toggle
+            document.getElementById("toggleSidebar").addEventListener("click", function (event) {
+                event.stopPropagation();
+                toggleSidebar();
+            });
+
+            // ✅ Ensure Sidebar is Open on Desktop, Closed on Mobile Initially
+            function checkScreenSize() {
+                if (window.innerWidth < 768) {
+                    document.body.classList.remove("sidebar-open");
+                    document.body.classList.add("sidebar-closed");
+                } else {
+                    document.body.classList.remove("sidebar-closed");
+                    document.body.classList.add("sidebar-open");
+                }
+            }
+
+            checkScreenSize();
+            window.addEventListener("resize", checkScreenSize);
         });
     </script>
 

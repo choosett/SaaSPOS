@@ -4,15 +4,16 @@
 
 @section('content')
 
+
 <!-- White background for the entire page -->
-<div class="min-h-screen bg-white flex">
+<div class="min-h-screen bg-white flex transition-all duration-500 ease-in-out">
     
-    <!-- Left Sidebar Space -->
-    <div class="w-64 bg-white"></div>
+    <!-- Sidebar Placeholder (Dynamic Width) -->
+    <div id="sidebarPlaceholder" class="md:block hidden transition-all duration-500 ease-in-out"></div>
 
     <!-- Main Content -->
-    <div class="flex-1 p-6">
-
+    <div id="dashboardContent" class="flex-1 p-6 transition-all duration-500 ease-in-out">
+        
         <!-- Grid Background Wrapper -->
         <div class="max-w-7xl mx-auto bg-[#0F317D] text-white rounded-xl p-6 shadow-lg">
 
@@ -92,7 +93,7 @@
 
                 <!-- Total Purchase Return -->
                 <div class="bg-white text-gray-900 shadow-md rounded-lg p-4 flex flex-col">
-                    <div class="flex items-center gap-3">
+                    <div class="items-center gap-3">
                         <div class="bg-pink-100 p-2 rounded-full">
                             <i class="text-pink-500 fas fa-receipt"></i>
                         </div>
@@ -117,5 +118,30 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const sidebarPlaceholder = document.getElementById("sidebarPlaceholder");
+        const dashboardContent = document.getElementById("dashboardContent");
+        const toggleSidebar = document.getElementById("toggleSidebar");
+
+        function toggleSidebarFunc() {
+            sidebar.classList.toggle("-translate-x-full");
+            sidebarPlaceholder.classList.toggle("hidden");
+            dashboardContent.classList.toggle("w-full");
+        }
+
+        // Desktop Sidebar Toggle
+        toggleSidebar.addEventListener("click", toggleSidebarFunc);
+
+        // Hide Sidebar on Mobile by Default
+        if (window.innerWidth < 768) {
+            sidebar.classList.add("-translate-x-full");
+            sidebarPlaceholder.classList.add("hidden");
+            dashboardContent.classList.add("w-full");
+        }
+    });
+</script>
 
 @endsection

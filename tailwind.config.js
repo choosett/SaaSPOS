@@ -7,7 +7,12 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
-        './resources/css/auth.css', // Ensure Tailwind processes auth.css
+        './resources/css/auth.css',
+    ],
+
+    safelist: [
+        'left-4', 'left-64', 'fixed', 'top-4', 'z-50',
+        'bg-[#0F317D]', 'p-2', 'transition-all', 'duration-500', 'ease-in-out'
     ],
 
     theme: {
@@ -20,3 +25,4 @@ export default {
 
     plugins: [forms],
 };
+

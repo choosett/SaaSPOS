@@ -1,3 +1,118 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ✅ Main Content Width Adjustments */
+.full-width {
+    width: 100%;
+    transition: width 0.3s ease-in-out;
+}
+
+.with-sidebar {
+    width: calc(100% - 260px); /* Adjust based on sidebar width */
+    transition: width 0.3s ease-in-out;
+}
+
+/* ✅ Sidebar & Submenu Styling */
+#sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* ✅ Sidebar Open & Close (For Mobile) */
+#sidebar.open {
+    transform: translateX(0);
+}
+
+#sidebar.closed {
+    transform: translateX(-100%);
+}
+
+/* ✅ Fix submenu alignment and spacing */
+#sidebar-menu ul {
+    padding-left: 10px; /* Indent submenus */
+    overflow: hidden;
+}
+
+/* ✅ Sidebar Main Items */
+#sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151; /* Tailwind gray-700 */
+    border-radius: 6px;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+#sidebar-menu li a:hover {
+    background-color: #e5e7eb; /* Tailwind gray-200 */
+}
+
+/* ✅ Submenu Items */
+#sidebar-menu ul li {
+    padding-left: 20px; /* Further indent submenus */
+}
+
+#sidebar-menu ul li a {
+    font-size: 13px;
+    color: #4b5563; /* Dark gray */
+    font-weight: 500;
+    transition: color 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+
+/* ✅ Submenu Active State */
+#sidebar-menu ul li a.active {
+    color: #1d4ed8; /* Tailwind blue-700 */
+    background-color: #e0f2fe; /* Light blue background */
+}
+
+/* ✅ Fix submenu icon alignment */
+#sidebar-menu li a span.material-icons {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+/* ✅ Submenu Transition (Scale-Y for smooth dropdown effect) */
+.submenu {
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+    display: none;
+}
+
+.submenu.open {
+    transform: scaleY(1);
+    opacity: 1;
+    display: block;
+}
+
+/* ✅ Sidebar Overlay for Mobile */
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    display: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ✅ Button Styles */
+.sidebar-button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.sidebar-button:hover {
+    background-color: #f3f4f6; /* Tailwind gray-100 */
+}

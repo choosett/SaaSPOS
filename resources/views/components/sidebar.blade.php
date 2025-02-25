@@ -1,105 +1,129 @@
 <!-- SIDEBAR CONTAINER -->
-<div id="sidebar" 
-     class="w-64 h-full fixed top-0 left-0 shadow-lg overflow-y-auto bg-white z-50 
-            transform transition-all duration-500 ease-in-out text-[#4B5565] text-sm"
-     style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+<div id="sidebar" class="w-64 bg-[#f4f4f5] border-r border-[#cbd5e1] shadow-md overflow-y-auto z-50 transition-all duration-300 ease-in-out md:translate-x-0 -translate-x-full">
     
     <!-- USER INFO SECTION -->
-    <div class="p-4 text-center border-b">
-        <div class="flex flex-col items-center bg-gray-100 p-3 rounded-lg">
+    <div class="p-4 text-center border-b border-[#cbd5e1]">
+        <div class="flex flex-col items-center bg-gray-100 p-4 rounded-lg">
             <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" 
-                 alt="User Avatar" class="rounded-full w-12 h-12">
-            <h2 class="mt-2 font-bold text-black">Laurel Padberg</h2>
+                 alt="User Avatar" class="rounded-full w-16 h-16">
+            <h2 class="mt-2 font-bold text-gray-800 text-sm">Rupert Ratke</h2>
             <p class="text-gray-500 text-xs">admin@test.com</p>
+
+            <!-- Business ID (More Visible) -->
+            <p class="text-gray-700 text-sm font-bold bg-gray-200 px-3 py-1 rounded-md mt-2">
+                Business ID: 56373733
+            </p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-3 flex justify-center space-x-2">
+            <a href="#" class="flex items-center px-3 py-1.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+                <span class="material-icons text-gray-600 text-sm mr-1">person</span> Profile
+            </a>
+            <a href="#" class="flex items-center px-3 py-1.5 text-sm font-semibold text-red-600 border border-red-300 rounded-md hover:bg-red-100 transition">
+                <span class="material-icons text-red-500 text-sm mr-1">logout</span> Logout
+            </a>
         </div>
     </div>
 
     <!-- SIDEBAR MENU -->
-    <nav>
-        <ul>
-            <!-- Dashboard -->
-            <li>
-                <a href="#" class="flex items-center p-3 bg-gray-100 font-bold hover:bg-gray-200 rounded-md mx-2">
-                    <span class="material-icons mr-3">dashboard</span>
-                    <span class="sidebar-text">Dashboard</span>
-                </a>
-            </li>
+    <nav class="mt-4">
+        <ul id="sidebar-menu" class="space-y-1">
+            @php
+                $menus = [
+                    ["name" => "Dashboard", "icon" => "dashboard", "link" => "#"],
+                    ["name" => "User Management", "icon" => "group", "submenu" => [
+                        ["name" => "Users", "link" => "#"],
+                        ["name" => "Roles", "link" => "#"]
+                    ]],
+                    ["name" => "Contacts", "icon" => "contacts", "submenu" => [
+                        ["name" => "Suppliers", "link" => "#"],
+                        ["name" => "Customers", "link" => "#"],
+                        ["name" => "Membership", "link" => "#"],
+                        ["name" => "Import Contacts", "link" => "#"]
+                    ]],
+                    ["name" => "Products", "icon" => "inventory_2", "submenu" => [
+                        ["name" => "List Products", "link" => "#"],
+                        ["name" => "Add Products", "link" => "#"],
+                        ["name" => "Update Price", "link" => "#"],
+                        ["name" => "Print Labels", "link" => "#"],
+                        ["name" => "Variation", "link" => "#"],
+                        ["name" => "Import Products", "link" => "#"],
+                        ["name" => "Import Opening Stock", "link" => "#"],
+                        ["name" => "Selling Price Group", "link" => "#"],
+                        ["name" => "Units", "link" => "#"],
+                        ["name" => "Categories", "link" => "#"],
+                        ["name" => "Brands", "link" => "#"],
+                        ["name" => "Warranties", "link" => "#"]
+                    ]],
+                    ["name" => "Purchase", "icon" => "shopping_cart", "submenu" => [
+                        ["name" => "List Purchase", "link" => "#"],
+                        ["name" => "Add Purchase", "link" => "#"],
+                        ["name" => "List Return Purchase", "link" => "#"]
+                    ]],
+                    ["name" => "Stock Management", "icon" => "store", "submenu" => [
+                        ["name" => "Stock Report", "link" => "#"],
+                        ["name" => "Update Stock", "link" => "#"],
+                        ["name" => "Stock Expiry Report", "link" => "#"],
+                        ["name" => "Stock Transfer", "link" => "#"],
+                        ["name" => "List Transfer", "link" => "#"]
+                    ]],
+                    ["name" => "Sell", "icon" => "point_of_sale", "submenu" => [
+                        ["name" => "All Sales", "link" => "#"],
+                        ["name" => "Add Sale", "link" => "#"],
+                        ["name" => "POS", "link" => "#"],
+                        ["name" => "Discounts", "link" => "#"],
+                        ["name" => "Import Sales", "link" => "#"]
+                    ]],
+                    ["name" => "Courier", "icon" => "local_shipping", "submenu" => [
+                        ["name" => "List Parcel", "link" => "#"],
+                        ["name" => "Add Parcel", "link" => "#"],
+                        ["name" => "Courier Setting", "link" => "#"]
+                    ]],
+                    ["name" => "Expense", "icon" => "receipt_long", "submenu" => [
+                        ["name" => "List Expense", "link" => "#"],
+                        ["name" => "Add Expense", "link" => "#"],
+                        ["name" => "Expense Category", "link" => "#"]
+                    ]],
+                    ["name" => "Payment Accounts", "icon" => "account_balance_wallet", "submenu" => [
+                        ["name" => "All Accounts", "link" => "#"],
+                        ["name" => "Balance Sheet", "link" => "#"],
+                        ["name" => "Trial Balance", "link" => "#"],
+                        ["name" => "Cash Flow", "link" => "#"],
+                        ["name" => "Payment Account Report", "link" => "#"]
+                    ]],
+                    ["name" => "Reports", "icon" => "bar_chart", "submenu" => [
+                        ["name" => "Profit/Loss Report", "link" => "#"],
+                        ["name" => "Purchase & Sale", "link" => "#"],
+                        ["name" => "Tax Report", "link" => "#"],
+                        ["name" => "Suppliers & Customer Report", "link" => "#"]
+                    ]],
+                    ["name" => "Notification Templates", "icon" => "notifications", "link" => "#"],
+                    ["name" => "Settings", "icon" => "settings", "submenu" => [
+                        ["name" => "Business Settings", "link" => "#"],
+                        ["name" => "Business Locations", "link" => "#"],
+                        ["name" => "Invoice Settings", "link" => "#"],
+                        ["name" => "Barcode Settings", "link" => "#"],
+                        ["name" => "Receipt Printers", "link" => "#"],
+                        ["name" => "Tax Rates", "link" => "#"]
+                    ]]
+                ];
+            @endphp
 
-            <!-- User Management (Dropdown) -->
-            <li>
-                <button id="userDropdown" class="w-full flex items-center justify-between p-3 hover:bg-gray-200 rounded-md mx-2">
-                    <span class="flex items-center">
-                        <span class="material-icons mr-3">person</span>
-                        <span class="sidebar-text">User Management</span>
-                    </span>
-                    <span id="chevronIcon" class="material-icons transition-transform duration-500">expand_more</span>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <ul id="userMenu" class="ml-6 max-h-0 overflow-hidden transition-all duration-700 ease-in-out border-l-2 border-gray-300">
-                    <li><a href="#" class="block p-2 hover:bg-gray-100">Users</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100">Roles</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100">Sales Commission Agents</a></li>
-                </ul>
-            </li>
-
-            <!-- Contacts -->
-            <li><a href="#" class="flex items-center p-3 hover:bg-gray-200 rounded-md mx-2"><span class="material-icons mr-3">contacts</span> <span class="sidebar-text">Contacts</span></a></li>
-
-            <!-- Products -->
-            <li><a href="#" class="flex items-center p-3 hover:bg-gray-200 rounded-md mx-2"><span class="material-icons mr-3">inventory</span> <span class="sidebar-text">Products</span></a></li>
-
-            <!-- Purchases -->
-            <li><a href="#" class="flex items-center p-3 hover:bg-gray-200 rounded-md mx-2"><span class="material-icons mr-3">shopping_cart</span> <span class="sidebar-text">Purchases</span></a></li>
-
-            <!-- Sales -->
-            <li><a href="#" class="flex items-center p-3 hover:bg-gray-200 rounded-md mx-2"><span class="material-icons mr-3">sell</span> <span class="sidebar-text">Sell</span></a></li>
+            @foreach ($menus as $menu)
+                <li>
+                    <a href="{{ $menu['link'] ?? '#' }}" class="flex items-center text-gray-600 font-semibold text-sm px-3 py-2 rounded-md hover:bg-gray-200 transition @if(isset($menu['submenu'])) has-arrow @endif">
+                        <span class="material-icons mr-3">{{ $menu['icon'] }}</span> {{ $menu['name'] }}
+                    </a>
+                    @if(isset($menu['submenu']))
+                        <ul class="submenu hidden ml-6 border-l border-[#cbd5e1]">
+                            @foreach ($menu['submenu'] as $submenu)
+                                <li><a href="{{ $submenu['link'] }}" class="block px-3 py-2 text-gray-600 hover:bg-gray-100">{{ $submenu['name'] }}</a></li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </li>
+            @endforeach
         </ul>
     </nav>
 </div>
-
-<!-- SIDEBAR TOGGLE BUTTON (Moves Right When Closed, Moves Left When Opened) -->
-<button id="toggleSidebar" class="p-2 bg-[#0F317D] text-white fixed top-4 left-[270px] z-50 transition-all duration-500 ease-in-out">
-    <span class="material-icons">menu_open</span>  <!-- Sidebar Close/Open Icon -->
-</button>
-
-<!-- JAVASCRIPT -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.getElementById('sidebar');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const userDropdown = document.getElementById('userDropdown');
-        const userMenu = document.getElementById('userMenu');
-        const chevronIcon = document.getElementById('chevronIcon');
-
-        // Sidebar Toggle Function (Moves Button Position)
-        toggleSidebar.addEventListener('click', function () {
-            if (sidebar.classList.contains('-translate-x-full')) {
-                // Open Sidebar
-                sidebar.classList.remove('-translate-x-full');
-                toggleSidebar.innerHTML = '<span class="material-icons">menu_open</span>';
-                toggleSidebar.classList.remove('left-4');       
-                toggleSidebar.classList.add('left-[270px]');   
-            } else {
-                // Close Sidebar
-                sidebar.classList.add('-translate-x-full');
-                toggleSidebar.innerHTML = '<span class="material-icons">menu</span>';
-                toggleSidebar.classList.remove('left-[270px]'); 
-                toggleSidebar.classList.add('left-4');         
-            }
-        });
-
-        // Dropdown Animation (Collapses When Sidebar is Closed)
-        userDropdown.addEventListener('click', function () {
-            if (userMenu.classList.contains('max-h-0')) {
-                userMenu.classList.remove('max-h-0');
-                userMenu.classList.add('max-h-40', 'py-2');
-                chevronIcon.innerText = 'expand_less';
-            } else {
-                userMenu.classList.remove('max-h-40', 'py-2');
-                userMenu.classList.add('max-h-0');
-                chevronIcon.innerText = 'expand_more';
-            }
-        });
-    });
-</script>
