@@ -18,11 +18,19 @@ return new class extends Migration {
             $table->string('username')->unique(); // Unique username
             $table->string('email')->unique(); // Unique email
             $table->string('password');
+            $table->rememberToken(); // ✅ Ensures `remember_token` column is added
             $table->timestamps();
 
             // Foreign Key Constraint (Business)
             $table->foreign('business_id')->references('business_id')->on('businesses')->onDelete('cascade');
         });
+
+        // ✅ Check and Add `remember_token` Column if Not Exists
+        if (!Schema::hasColumn('users', 'remember_token')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->rememberToken()->after('password');
+            });
+        }
     }
 
     /**

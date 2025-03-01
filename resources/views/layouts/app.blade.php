@@ -7,17 +7,11 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Google Material Icons -->
+    <!-- ✅ Google Material Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <header class="bg-blue-900 text-white p-4 flex items-center shadow-md relative">
-    <!-- ✅ Toggle Button (Aligned Left of 'Perfex' on Desktop) -->
-    <button id="toggleSidebar" class="absolute left-16 md:left-64 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-md transition-all duration-300">
-        <span id="toggleIcon" class="material-icons">menu</span>
-    </button>
-    
-    <!-- ✅ Shift 'Perfex' text right to keep spacing correct -->
-    <h1 class="ml-16 md:ml-20 text-lg font-bold">Perfex</h1>
-</header>
+
+    <!-- ✅ jQuery for AJAX & Sidebar Toggle -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
         /* ✅ Sidebar Defaults */
@@ -73,21 +67,17 @@
         /* ✅ Toggle Button Adjustments */
         #toggleSidebar {
             position: absolute;
+            left: 260px; /* ✅ Default position when sidebar is open */
             transition: left 0.3s ease-in-out;
         }
 
-        /* ✅ Sidebar Open - Toggle Stays Next to Sidebar */
-        .sidebar-open #toggleSidebar {
-            left: 260px; /* ✅ Moves to Sidebar Edge */
-        }
-
-        /* ✅ Sidebar Closed - Toggle Returns to Default */
+        /* ✅ Sidebar Closed - Toggle Moves to Default */
         .sidebar-closed #toggleSidebar {
-            left: 15px;
+            left: 15px !important;
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-gray-100 text-gray-900 sidebar-open"> <!-- ✅ Sidebar Open on Desktop -->
+<body class="font-sans antialiased bg-gray-100 text-gray-900 sidebar-open"> <!-- ✅ Sidebar Open by Default -->
 
     <div class="flex h-screen">
         <!-- ✅ Sidebar -->
@@ -95,9 +85,14 @@
 
         <!-- ✅ Main Content -->
         <div id="mainContent" class="flex-1 flex flex-col">
-            
             <!-- ✅ Header with Toggle Button -->
-        
+            <header class="bg-blue-900 text-white p-4 flex items-center shadow-md relative">
+                <!-- ✅ Sidebar Toggle Button -->
+                <button id="toggleSidebar" class="absolute left-[260px] md:left-[260px] top-1/2 transform -translate-y-1/2 text-white p-2 rounded-md transition-all duration-300">
+                    <span id="toggleIcon" class="material-icons">menu</span>
+                </button>
+                <h1 class="ml-16 md:ml-20 text-lg font-bold">Perfex</h1>
+            </header>
 
             <!-- ✅ Page Content -->
             <main class="p-6 overflow-y-auto flex-1">
@@ -106,37 +101,46 @@
         </div>
     </div>
 
+    <!-- ✅ Sidebar & Toggle Script -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        $(document).ready(function () {
             console.log("✅ Sidebar Toggle Loaded!");
 
             // ✅ Sidebar Toggle Function
             function toggleSidebar() {
-                document.body.classList.toggle("sidebar-open");
-                document.body.classList.toggle("sidebar-closed");
+                $("body").toggleClass("sidebar-open sidebar-closed");
+
+                // ✅ Adjust Sidebar Toggle Button Position
+                if ($("body").hasClass("sidebar-closed")) {
+                    $("#toggleSidebar").css("left", "15px"); // Move to left when sidebar is closed
+                } else {
+                    $("#toggleSidebar").css("left", "0"); // Move next to sidebar when open
+                }
             }
 
             // ✅ Attach Click Event for Sidebar Toggle
-            document.getElementById("toggleSidebar").addEventListener("click", function (event) {
+            $("#toggleSidebar").on("click", function (event) {
                 event.stopPropagation();
                 toggleSidebar();
             });
 
             // ✅ Ensure Sidebar is Open on Desktop, Closed on Mobile Initially
             function checkScreenSize() {
-                if (window.innerWidth < 768) {
-                    document.body.classList.remove("sidebar-open");
-                    document.body.classList.add("sidebar-closed");
+                if ($(window).width() < 768) {
+                    $("body").removeClass("sidebar-open").addClass("sidebar-closed");
+                    $("#toggleSidebar").css("left", "15px"); // Adjust button for mobile
                 } else {
-                    document.body.classList.remove("sidebar-closed");
-                    document.body.classList.add("sidebar-open");
+                    $("body").removeClass("sidebar-closed").addClass("sidebar-open");
+                    $("#toggleSidebar").css("left", "0px"); // Adjust button for desktop
                 }
             }
 
             checkScreenSize();
-            window.addEventListener("resize", checkScreenSize);
+            $(window).on("resize", checkScreenSize);
         });
     </script>
+
+    @yield('scripts')
 
 </body>
 </html>

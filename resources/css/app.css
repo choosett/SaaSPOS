@@ -448,3 +448,35 @@
 }
 
 
+
+
+/* ✅ Smaller, clean input fields */
+.form-input {
+    width: 100%;
+    max-width: 350px;  /* ✅ Adjust width */
+    padding: 6px 10px; /* ✅ Reduce padding */
+    font-size: 14px;   /* ✅ Smaller font */
+    border: 1px solid #D1D5DB;
+    border-radius: 6px; /* ✅ Rounded shape */
+    transition: border 0.3s ease-in-out;
+}
+
+.form-input:focus {
+    border-color: #0E3EA8;
+    outline: none;
+}
+
+/* ✅ Form Labels */
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* ✅ Username Availability Message */
+.text-green-500 { color: #22C55E; }
+.text-red-500 { color: #EF4444; }
+
+

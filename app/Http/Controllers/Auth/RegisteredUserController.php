@@ -14,33 +14,21 @@ use Spatie\Permission\Models\Role;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Show the registration form.
-     */
     public function create()
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     */
     public function store(Request $request)
     {
-        // Validate input fields
         $validated = $request->validate([
             'business_name' => 'required|string|max:255',
             'start_date' => 'required|date',
             'currency' => 'required|string|max:10',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'website' => 'nullable|url|max:255',
             'business_contact' => 'required|string|max:20',
-            'alternate_contact' => 'nullable|string|max:20',
             'district' => 'required|string|max:50',
             'business_address' => 'required|string|max:255',
             'zip_code' => 'required|string|max:10',
-            'bin_number' => 'nullable|string|max:50',
-            'dbid_number' => 'nullable|string|max:50',
             'financial_year' => 'required|string|max:20',
             'stock_method' => 'required|in:FIFO,LIFO',
             'first_name' => 'required|string|max:100',
@@ -51,36 +39,34 @@ class RegisteredUserController extends Controller
         ]);
 
         try {
-            // Generate a unique 8-digit Business ID
+            \DB::beginTransaction(); // ✅ Start Transaction
+
+            // ✅ Generate a unique 8-character Business ID
             do {
-                $business_id = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+                $business_id = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 8));
             } while (Business::where('business_id', $business_id)->exists());
 
-            // Handle logo upload if provided
-            $logoPath = $request->hasFile('logo') ? $request->file('logo')->store('logos', 'public') : null;
-
-            // Create new Business
+            // ✅ Create new Business
             $business = Business::create([
                 'business_id' => $business_id,
                 'business_name' => $validated['business_name'],
                 'start_date' => $validated['start_date'],
                 'currency' => $validated['currency'],
-                'logo' => $logoPath,
-                'website' => $validated['website'],
                 'business_contact' => $validated['business_contact'],
-                'alternate_contact' => $validated['alternate_contact'],
                 'district' => $validated['district'],
                 'business_address' => $validated['business_address'],
                 'zip_code' => $validated['zip_code'],
-                'bin_number' => $validated['bin_number'],
-                'dbid_number' => $validated['dbid_number'],
                 'financial_year' => $validated['financial_year'],
                 'stock_method' => $validated['stock_method'],
             ]);
 
-            // Create new User (Owner)
+            if (!$business || !$business->exists) {
+                throw new \Exception('Business creation failed!');
+            }
+
+            // ✅ Create new User
             $user = User::create([
-                'business_id' => $business->business_id,
+                'business_id' => $business->business_id, // Assign correct business_id
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'username' => $validated['username'],
@@ -88,15 +74,26 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
 
-            // Assign role to user (Ensure Spatie Roles are used)
-            $user->assignRole('admin');
+            if (!$user || !$user->exists) {
+                throw new \Exception('User creation failed!');
+            }
 
-            // Log the user in
+            // ✅ Assign business-specific roles
+            $adminRole = Role::firstOrCreate([
+                'name' => 'admin',
+                'guard_name' => 'web',
+                'business_id' => $business->business_id, // Assign to correct business
+            ]);
+
+            $user->assignRole($adminRole);
+
+            \DB::commit(); // ✅ Commit Transaction
+
             Auth::login($user);
-
             return redirect()->route('dashboard')->with('success', 'Business registered successfully!');
-
         } catch (QueryException $e) {
+            \DB::rollBack(); // ✅ Rollback Transaction on Failure
+            \Log::error('Registration failed:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Registration failed. Please try again.');
         }
     }

@@ -39,8 +39,8 @@
                     ["name" => "Dashboard", "icon" => "dashboard", "link" => route('dashboard')],
                             ["name" => "User Management", "icon" => "group", "submenu" => [
                                 ["name" => "Users", "link" => route('users.index')], // ✅ Correct route
-        ["name" => "Roles", "link" => route('roles.index')]  // ✅ Correct route
-                    ]],
+                                ["name" => "ALL Roles", "link" => route('allroles.index')]  // ✅ Correct route
+                                            ]],
 
                     ["name" => "Contacts", "icon" => "contacts", "submenu" => [
                         ["name" => "Suppliers", "link" => "#"],

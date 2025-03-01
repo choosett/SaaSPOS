@@ -3,25 +3,44 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\Models\Role;
+use App\Models\Business;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        // ✅ Ensure table doesn't already exist before creating
+        if (!Schema::hasTable('roles')) {
+            Schema::create('roles', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('business_id')->nullable(); // Allow nullable for global roles
+                $table->string('name');
+                $table->string('guard_name')->default('web');
+                $table->timestamps();
+
+                $table->foreign('business_id')->references('id')->on('businesses')->onDelete('cascade');
+                $table->unique(['name', 'business_id']); // Ensure unique roles per business
+            });
+        }
+
+        // ✅ Assign Default Roles Only If a Business Exists
+        $business = Business::first(); // Get the first business
+
+        if ($business && $business->id) {
+            Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web', 'business_id' => $business->id]);
+            Role::firstOrCreate(['name' => 'Cashier', 'guard_name' => 'web', 'business_id' => $business->id]);
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        // ✅ Drop the foreign key only if table exists
+        if (Schema::hasTable('roles')) {
+            Schema::table('roles', function (Blueprint $table) {
+                $table->dropForeign(['business_id']);
+            });
+
+            Schema::dropIfExists('roles');
+        }
     }
 };
