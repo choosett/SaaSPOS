@@ -136,6 +136,53 @@ $(document).ready(function () {
         });
     }
 
+  // ✅ Handle Delete Button Actions (AJAX with Toastr)
+  function attachEvents() {
+        $(".delete-btn").off("click").on("click", function (event) {
+            event.preventDefault();
+
+            let deleteUrl = $(this).data("url"); // Get delete URL from button
+            if (!deleteUrl) {
+                console.error("❌ Delete URL missing.");
+                return;
+            }
+
+            let confirmDelete = confirm("Are you sure you want to delete this user?");
+            if (!confirmDelete) return;
+
+            $.ajax({
+                url: deleteUrl,
+                type: "POST",
+                data: {
+                    _method: "DELETE",
+                    _token: "{{ csrf_token() }}"
+                },
+                beforeSend: function () {
+                    console.log("🗑 Deleting user...");
+                },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.success, "Success", {
+                            positionClass: "toast-top-right",
+                            timeOut: 3000,
+                            progressBar: true,
+                            closeButton: true,
+                        });
+                        fetchUsers(); // Refresh user table
+                    } else {
+                        toastr.error("❌ Failed to delete user", "Error");
+                    }
+                },
+                error: function (xhr) {
+                    console.error("❌ Delete Error:", xhr.responseText);
+                    toastr.error("❌ Error deleting user. Check console for details.", "Error");
+                }
+            });
+        });
+    }
+
+
+
     // ✅ Initial Attach
     attachEvents();
 });

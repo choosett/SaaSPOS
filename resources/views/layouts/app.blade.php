@@ -10,8 +10,30 @@
     <!-- ✅ Google Material Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    <!-- ✅ jQuery for AJAX & Sidebar Toggle -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <!-- ✅ Ensure jQuery is already loaded -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<!-- ✅ Toastr JS (Ensure it loads after jQuery) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<!-- ✅ Toastr Configuration -->
+<script>
+    $(document).ready(function () {
+        @if(session('success'))
+            toastr.success("{{ session('success') }}", "Success", {
+                positionClass: "toast-top-right",
+                timeOut: 3000,
+                progressBar: true,
+                closeButton: true,
+            });
+        @endif
+    });
+</script>
+
+
 
     <style>
         /* ✅ Sidebar Defaults */

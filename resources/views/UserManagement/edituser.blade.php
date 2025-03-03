@@ -4,10 +4,21 @@
 
 @section('content')
 
-<!-- ✅ Form Container: Aligned with Header -->
+<!-- ✅ Form Container -->
 <div class="flex justify-center items-start min-h-screen mt-0 pt-0">
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-3xl"> 
         <h1 class="text-2xl font-bold mb-6 text-center text-[#0E3EA8]">Edit User</h1>
+
+        <!-- ✅ Show Validation Errors -->
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-4">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <form action="{{ route('users.update', $editingUser->id) }}" method="POST">
             @csrf
@@ -91,8 +102,6 @@
 
 @endsection
 
-
-
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -113,10 +122,8 @@
                 success: function (response) {
                     if (response.available) {
                         $("#usernameAvailability").text("✅ Username available").addClass("text-green-500").removeClass("text-red-500");
-                        $("#generatedUsername").text(response.suggested_username);
                     } else {
                         $("#usernameAvailability").text("❌ Username already taken").addClass("text-red-500").removeClass("text-green-500");
-                        $("#generatedUsername").text("");
                     }
                 }
             });
@@ -150,7 +157,7 @@
             let confirmPassword = $("#confirmPasswordInput").val();
             let message = $("#passwordMatchMessage");
 
-            if (password.length >= 6 && confirmPassword.length >= 6) {
+            if (password !== "" || confirmPassword !== "") {
                 if (password === confirmPassword) {
                     message.text("✅ Passwords match").addClass("text-green-500").removeClass("text-red-500");
                 } else {
@@ -160,6 +167,16 @@
                 message.text("");
             }
         });
+
+        // ✅ Toastr Success Notification
+        @if(session('success'))
+            toastr.success("{{ session('success') }}", "Success", {
+                positionClass: "toast-top-right",
+                timeOut: 3000,
+                progressBar: true,
+                closeButton: true,
+            });
+        @endif
 
     });
 </script>

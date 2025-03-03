@@ -85,7 +85,13 @@
 
 
 @section('scripts')
+<!-- ✅ Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Include Toastr.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 <script>
     $(document).ready(function () {
 
@@ -155,6 +161,16 @@
                 submitButton.prop("disabled", true);
             }
         });
+
+        // ✅ Toastr Success Notification (for new user creation)
+        @if(session('success'))
+            toastr.success("{{ session('success') }}", "Success", {
+                positionClass: "toast-top-right",
+                timeOut: 3000,
+                progressBar: true,
+                closeButton: true,
+            });
+        @endif
 
     });
 </script>
