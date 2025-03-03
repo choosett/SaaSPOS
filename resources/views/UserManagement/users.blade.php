@@ -45,63 +45,99 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        let debounceTimer;
+$(document).ready(function () {
+    let debounceTimer;
 
-        function fetchUsers(url = "{{ route('users.index') }}") {
-            let search = $("#searchInput").val();
-            let perPage = $("#entriesSelect").val();
+    function fetchUsers(url = "{{ route('users.index') }}") {
+        let search = $("#searchInput").val();
+        let perPage = $("#entriesSelect").val();
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: { search: search, per_page: perPage },
+            dataType: "json", // Expecting a JSON response with 'html' key
+            beforeSend: function () {
+                console.log("🔄 Fetching users...");
+                $("#usersTableContainer").css({ opacity: "0.5" });
+            },
+            success: function (response) {
+                console.log("✅ AJAX Success:", response);
+
+                if (response.html) {
+                    $("#usersTableContainer").html(response.html);
+                } else {
+                    console.error("❌ No HTML received in response.");
+                }
+
+                $("#usersTableContainer").css({ opacity: "1" });
+
+                // ✅ Reattach event listeners after content updates
+                attachEvents();
+            },
+            error: function (xhr, status, error) {
+                console.error("❌ AJAX Error:", xhr.responseText);
+                alert("Error fetching users. Check console for details.");
+            }
+        });
+    }
+
+    // ✅ Live Search (Debounced)
+    $("#searchInput").on("input", function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(fetchUsers, 300);
+    });
+
+    // ✅ Change Entries Per Page
+    $("#entriesSelect").on("change", function () {
+        fetchUsers();
+    });
+
+    // ✅ Handle AJAX Pagination
+    $(document).on("click", ".pagination a", function (event) {
+        event.preventDefault();
+        let url = $(this).attr("href");
+        if (url) fetchUsers(url);
+    });
+
+    // ✅ Handle Delete Button Actions (AJAX)
+    function attachEvents() {
+        $(".delete-btn").off("click").on("click", function (event) {
+            event.preventDefault();
+
+            let deleteUrl = $(this).data("url"); // Get delete URL from button
+            if (!deleteUrl) {
+                console.error("❌ Delete URL missing.");
+                return;
+            }
+
+            let confirmDelete = confirm("Are you sure you want to delete this user?");
+            if (!confirmDelete) return;
 
             $.ajax({
-                url: url,
-                type: "GET",
-                data: { search: search, per_page: perPage },
+                url: deleteUrl,
+                type: "POST",
+                data: {
+                    _method: "DELETE", // Laravel requires DELETE method
+                    _token: "{{ csrf_token() }}" // CSRF Token for security
+                },
                 beforeSend: function () {
-                    $("#usersTableContainer").css({ opacity: "1" });
+                    console.log("🗑 Deleting user...");
                 },
                 success: function (response) {
-                    // ✅ Update the table correctly
-                    $("#usersTableContainer").html(response.html);
-                    $("#usersTableContainer").css({ opacity: "1" });
-
-                    // ✅ Reattach event listeners
-                    attachEvents();
+                    alert("✅ User deleted successfully!");
+                    fetchUsers(); // Refresh user table
                 },
-                error: function () {
-                    alert("❌ Error fetching users. Please try again.");
+                error: function (xhr) {
+                    console.error("❌ Delete Error:", xhr.responseText);
+                    alert("❌ Error deleting user. Check console for details.");
                 }
             });
-        }
-
-        // ✅ Live Search
-        $("#searchInput").on("input", function () {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(fetchUsers, 300);
         });
+    }
 
-        // ✅ Change Entries Per Page
-        $("#entriesSelect").on("change", function () {
-            fetchUsers();
-        });
-
-        // ✅ Handle AJAX Pagination
-        $(document).on("click", ".pagination a", function (event) {
-            event.preventDefault();
-            let url = $(this).attr("href");
-            if (url) fetchUsers(url);
-        });
-
-        // ✅ Handle Delete Button Actions
-        function attachEvents() {
-            $(".delete-btn").off("click").on("click", function () {
-                let confirmDelete = confirm('Are you sure you want to delete this user?');
-                if (!confirmDelete) return false;
-            });
-        }
-
-        // ✅ Initial Attach
-        attachEvents();
-    });
+    // ✅ Initial Attach
+    attachEvents();
+});
 </script>
-
 @endsection

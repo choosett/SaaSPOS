@@ -16,8 +16,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // ✅ Pass authenticated user data to all views
         View::composer('*', function ($view) {
-            $view->with('user', Auth::check() ? Auth::user() : null);
+            $view->with('authUser', Auth::check() ? Auth::user() : null); // ✅ Fixes conflict
         });
+        
 
         // ✅ Register Spatie Middleware Manually
         $this->app->booted(function () {

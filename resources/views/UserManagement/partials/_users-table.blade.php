@@ -26,9 +26,19 @@
             <td>{{ $user->created_at ? $user->created_at->format('Y-m-d') : 'N/A' }}</td>
             <td>{{ $user->last_login ? $user->last_login->format('Y-m-d H:i') : 'Never' }}</td>
             <td class="actions">
-                <button class="action-btn edit"><span class="material-icons">edit</span> <span class="btn-text">Edit</span></button>
+            <a href="{{ route('users.edit', $user->id) }}" class="action-btn edit">
+    <span class="material-icons">edit</span> 
+    <span class="btn-text">Edit</span>
+</a>
+
+
                 <button class="action-btn view"><span class="material-icons">visibility</span> <span class="btn-text">View</span></button>
-                <button class="action-btn delete delete-btn"><span class="material-icons">delete</span> <span class="btn-text">Delete</span></button>
+                <button class="action-btn delete delete-btn"
+        data-url="{{ route('users.destroy', $user->id) }}">
+    <span class="material-icons">delete</span>
+    <span class="btn-text">Delete</span>
+</button>
+
             </td>
         </tr>
         @empty

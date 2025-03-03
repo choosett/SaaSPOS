@@ -13,12 +13,12 @@ return new class extends Migration {
         if (!Schema::hasTable('roles')) {
             Schema::create('roles', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('business_id')->nullable(); // Allow nullable for global roles
+                $table->string('business_id', 8)->nullable(); // ✅ Convert to STRING to match businesses.business_id
                 $table->string('name');
                 $table->string('guard_name')->default('web');
                 $table->timestamps();
 
-                $table->foreign('business_id')->references('id')->on('businesses')->onDelete('cascade');
+                $table->foreign('business_id')->references('business_id')->on('businesses')->onDelete('cascade'); 
                 $table->unique(['name', 'business_id']); // Ensure unique roles per business
             });
         }
@@ -26,9 +26,9 @@ return new class extends Migration {
         // ✅ Assign Default Roles Only If a Business Exists
         $business = Business::first(); // Get the first business
 
-        if ($business && $business->id) {
-            Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web', 'business_id' => $business->id]);
-            Role::firstOrCreate(['name' => 'Cashier', 'guard_name' => 'web', 'business_id' => $business->id]);
+        if ($business) {
+            Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web', 'business_id' => $business->business_id]);
+            Role::firstOrCreate(['name' => 'Cashier', 'guard_name' => 'web', 'business_id' => $business->business_id]);
         }
     }
 

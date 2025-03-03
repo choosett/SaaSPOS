@@ -1,14 +1,19 @@
 <?php
 
+use App\Models\User;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\RolePageController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PosController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,10 +22,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// ✅ Username Availability Check API (For Live Search)
+// ✅ Username & Email Availability Check API
 Route::get('/users/check-username', [UserController::class, 'checkUsername'])->name('users.checkUsername');
 Route::get('/users/check-email', [UserController::class, 'checkEmail'])->name('users.checkEmail');
-
 
 // ✅ Authentication Routes
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -29,8 +33,22 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('l
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
 
-// ✅ Dashboard (Requires Authentication)
-Route::middleware(['auth', 'verified'])->group(function () {
+// ✅ Email Verification Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [EmailVerificationPromptController::class, '__invoke'])
+        ->name('verification.notice'); 
+    
+    Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
+
+// ✅ Dashboard (Requires Authentication & Permission)
+Route::middleware(['auth', 'permission:dashboard.view'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
@@ -48,33 +66,28 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ✅ User Management (Admin Only)
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-    Route::post('/users', [UserController::class, 'store'])->name('users.store');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-
-    // ✅ Username Availability Check API (For Live Search)
-    Route::get('/users/check-username', [UserController::class, 'checkUsername'])->name('users.checkUsername');
+// ✅ POS System (Requires Cashier Role)
+Route::middleware(['auth', 'role:cashier'])->group(function () {
+    Route::get('/pos', [PosController::class, 'index'])->name('pos');
 });
 
-// ✅ Role Management (Admin Only)
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/allroles', [RolePageController::class, 'index'])->name('allroles.index'); // List roles
-    Route::get('/roles/create', [RolePageController::class, 'create'])->name('roles.create'); // Create role form
-    Route::post('/roles', [RolePageController::class, 'store'])->name('roles.store'); // Store new role
-    Route::get('/roles/{role}', [RolePageController::class, 'show'])->name('roles.show'); // Show role details
-    Route::get('/roles/{role}/edit', [RolePageController::class, 'edit'])->name('roles.edit'); // Edit role form
-    Route::put('/roles/{role}', [RolePageController::class, 'update'])->name('roles.update'); // Update role
-    Route::delete('/roles/{role}', [RolePageController::class, 'destroy'])->name('roles.destroy'); // Delete role
+// ✅ User Management (With Permissions)
+Route::middleware(['auth', 'permission:users.view'])->group(function () {
+    Route::resource('/users', UserController::class);
+});
+
+// ✅ Role Management (With Permissions)
+Route::middleware(['auth', 'permission:roles.view'])->group(function () {
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 });
 
 // ✅ Admin Panel
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'permission:admin.access'])->group(function () {
     Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 });
@@ -89,10 +102,33 @@ Route::get('/debug-auth', function () {
     ]);
 });
 
-// ✅ Test Role Middleware
-Route::middleware(['auth', 'role:admin'])->get('/test-role', function () {
-    return "✅ You have admin access!";
+// ✅ Test Permission Middleware
+Route::middleware(['auth', 'permission:admin.access'])->get('/test-permission', function () {
+    return "✅ You have permission access!";
 });
 
 // ✅ Include Additional Authentication Routes
 require __DIR__.'/auth.php';
+
+// ✅ Debug Check for `DemoRoles`
+Route::get('/check-demo-roles', [RoleController::class, 'checkDemoRolesPermissions']);
+
+
+Route::middleware(['auth', 'permission:users.edit'])->group(function () {
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+});
+
+
+
+Route::middleware(['auth', 'permission:users.create'])->group(function () {
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+});
+
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy')
+    ->middleware(['auth', 'permission:users.delete']);
+
+
+
+

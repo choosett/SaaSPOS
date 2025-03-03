@@ -1,18 +1,20 @@
-<!-- SIDEBAR CONTAINER -->
-<div id="sidebar" class="w-64 bg-[#f4f4f5] border-r border-[#cbd5e1] shadow-md overflow-y-auto z-50 transition-all duration-300 ease-in-out md:translate-x-0 -translate-x-full">
-    
-    <!-- USER INFO SECTION -->
-    <div class="p-4 text-center border-b border-[#cbd5e1]">
-        <div class="flex flex-col items-center bg-gray-100 p-4 rounded-lg">
-            <img src="{{ $user && $user->avatar ? asset('storage/' . $user->avatar) : 'https://cdn-icons-png.flaticon.com/512/147/147144.png' }}" 
-                 alt="User Avatar" class="rounded-full w-16 h-16">
-            <h2 class="mt-2 font-bold text-gray-800 text-sm">{{ $user ? $user->first_name . ' ' . ($user->last_name ?? '') : 'Guest User' }}</h2>
-            <p class="text-gray-500 text-xs">{{ $user ? $user->email : 'Not Logged In' }}</p>
+        <!-- SIDEBAR CONTAINER -->
+        <div id="sidebar" class="w-64 bg-[#f4f4f5] border-r border-[#cbd5e1] shadow-md overflow-y-auto z-50 transition-all duration-300 ease-in-out md:translate-x-0 -translate-x-full">
+            
+            <!-- USER INFO SECTION -->
+            <div class="p-4 text-center border-b border-[#cbd5e1]">
+                <div class="flex flex-col items-center bg-gray-100 p-4 rounded-lg">
+                <img src="{{ $authUser && $authUser->avatar ? asset('storage/' . $authUser->avatar) : 'https://cdn-icons-png.flaticon.com/512/147/147144.png' }}" 
+            alt="User Avatar" class="rounded-full w-16 h-16">
+        <h2 class="mt-2 font-bold text-gray-800 text-sm">{{ $authUser ? $authUser->first_name . ' ' . ($authUser->last_name ?? '') : 'Guest User' }}</h2>
+        <p class="text-gray-500 text-xs">{{ $authUser ? $authUser->email : 'Not Logged In' }}</p>
+        <p class="text-gray-700 text-sm font-bold bg-gray-200 px-3 py-1 rounded-md mt-2">
+            Business ID: {{ $authUser->business_id ?? 'N/A' }}
+        </p>
+
 
             <!-- Business ID (More Visible) -->
-            <p class="text-gray-700 text-sm font-bold bg-gray-200 px-3 py-1 rounded-md mt-2">
-                Business ID: {{ $user->business_id ?? 'N/A' }}
-            </p>
+    
         </div>
 
         <!-- Buttons -->
@@ -39,7 +41,7 @@
                     ["name" => "Dashboard", "icon" => "dashboard", "link" => route('dashboard')],
                             ["name" => "User Management", "icon" => "group", "submenu" => [
                                 ["name" => "Users", "link" => route('users.index')], // ✅ Correct route
-                                ["name" => "ALL Roles", "link" => route('allroles.index')]  // ✅ Correct route
+                                ["name" => "ALL Roles", "link" => route('roles.index')]  // ✅ Correct route
                                             ]],
 
                     ["name" => "Contacts", "icon" => "contacts", "submenu" => [

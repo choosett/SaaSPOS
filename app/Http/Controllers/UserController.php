@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -15,15 +16,13 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $user = Auth::user();
-        if (!$user) {
+        $authUser = Auth::user();
+        if (!$authUser) {
             return redirect()->route('login')->with('error', 'You must be logged in.');
         }
 
-        // ✅ Only get users for the authenticated user's business
-        $query = User::where('business_id', $user->business_id);
+        $query = User::where('business_id', $authUser->business_id);
 
-        // ✅ Handle Search Query
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -34,14 +33,12 @@ class UserController extends Controller
             });
         }
 
-        // ✅ Handle Entries Per Page Selection
         $perPage = $request->input('per_page', 10);
         $users = $query->paginate($perPage)->appends([
             'search' => $request->search,
             'per_page' => $perPage
         ]);
 
-        // ✅ Return AJAX Response If Requested
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('UserManagement.partials._users-table', compact('users'))->render()
@@ -52,15 +49,164 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for editing the specified user.
+     */
+    public function edit(User $user)
+    {
+        $authUser = Auth::user();
+
+        // ✅ Fetch roles for the dropdown
+        $roles = Role::where('business_id', $authUser->business_id)->get();
+
+        \Log::info("✅ Sending User & Roles to Blade:", [
+            'User' => $user->toArray(),
+            'Roles' => $roles->pluck('name')->toArray()
+        ]);
+
+        return view('UserManagement.edituser', [
+            'editingUser' => $user,
+            'authUser' => $authUser,
+            'roles' => $roles
+        ]);
+    }
+
+    /**
+     * Update the specified user.
+     */
+    public function update(Request $request, $id)
+    {
+        \Log::info("🔄 Update Request Received for User ID: {$id}");
+
+        $authUser = Auth::user();
+
+        // Fetch the correct user
+        $user = User::where('id', $id)
+                    ->where('business_id', $authUser->business_id)
+                    ->first();
+
+        if (!$user) {
+            return redirect()->route('users.index')->with('error', 'Unauthorized access.');
+        }
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'password' => 'nullable|min:6|confirmed',
+            'role' => 'required|string',
+        ]);
+
+        $role = Role::where('name', $request->role)
+                    ->where('business_id', $authUser->business_id)
+                    ->first();
+
+        if (!$role) {
+            return redirect()->back()->with('error', 'Invalid role selection.');
+        }
+
+        $user->update($request->except('password', 'role'));
+
+        if ($request->filled('password')) {
+            $user->update(['password' => Hash::make($request->password)]);
+        }
+
+        $user->syncRoles([$role->name]);
+
+        \Log::info("✅ User {$user->id} updated successfully.");
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    }
+
+    /**
+     * Store a newly created user.
+     */
+    public function store(Request $request)
+    {
+        $authUser = Auth::user();
+        if (!$authUser) {
+            return redirect()->route('login')->with('error', 'You must be logged in.');
+        }
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'username' => 'required|string|max:255|unique:users,username',
+            'password' => 'required|min:6|confirmed',
+            'role' => 'required|string',
+        ]);
+
+        $role = Role::where('name', $request->role)
+                    ->where('business_id', $authUser->business_id)
+                    ->first();
+
+        if (!$role) {
+            return redirect()->back()->with('error', 'Invalid role selection.');
+        }
+
+        $newUser = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'business_id' => $authUser->business_id,
+        ]);
+
+        $newUser->assignRole($role);
+        Log::info("User {$newUser->id} assigned role: {$role->name} by {$authUser->id}");
+
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
+    }
+
+    /**
+     * Remove the specified user.
+     */
+   /**
+ * Remove the specified user.
+ */
+public function destroy($id)
+{
+    $authUser = Auth::user();
+
+    // ✅ Fetch the user to delete
+    $user = User::where('id', $id)
+                ->where('business_id', $authUser->business_id)
+                ->first();
+
+    // ❌ If user does not exist
+    if (!$user) {
+        \Log::error("❌ User ID {$id} not found or unauthorized.");
+        return redirect()->route('users.index')->with('error', 'User not found or unauthorized access.');
+    }
+
+    // ❌ Prevent deleting the logged-in user
+    if ($user->id === $authUser->id) {
+        return redirect()->route('users.index')->with('error', 'You cannot delete your own account.');
+    }
+
+    // ❌ Prevent deleting admin users
+    if ($user->hasRole('admin')) {
+        return redirect()->route('users.index')->with('error', 'You cannot delete an admin user.');
+    }
+
+    // ✅ Log deletion
+    \Log::warning("⚠️ User {$user->id} deleted by {$authUser->id}");
+
+    // ✅ Delete user
+    $user->delete();
+
+    return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+}
+
+    /**
      * Check if a username is available (AJAX Request).
      */
     public function checkUsername(Request $request)
     {
         $request->validate(['username' => 'required|string|min:3|max:255']);
-
-        $username = $request->username;
-        $exists = User::where('username', $username)->exists();
-
+        $exists = User::where('username', $request->username)->exists();
         return response()->json(['available' => !$exists]);
     }
 
@@ -70,10 +216,7 @@ class UserController extends Controller
     public function checkEmail(Request $request)
     {
         $request->validate(['email' => 'required|email|max:255']);
-
-        $email = $request->email;
-        $exists = User::where('email', $email)->exists();
-
+        $exists = User::where('email', $request->email)->exists();
         return response()->json(['available' => !$exists]);
     }
 
@@ -82,137 +225,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'You must be logged in.');
-        }
-
-        // ✅ Get roles only for the authenticated user's business
-        $roles = Role::where('business_id', $user->business_id)->get();
-
-        return view('UserManagement.adduser', compact('roles'));
-    }
-
-    /**
-     * Store a newly created user.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'username' => 'required|string|max:255|unique:users,username',
-            'password' => 'required|min:6|confirmed',
-            'role' => 'required|exists:roles,name',
-        ]);
-
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'You must be logged in.');
-        }
-
-        // ✅ Create User
-        $newUser = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'business_id' => $user->business_id,
-        ]);
-
-        // ✅ Assign Role
-        $newUser->assignRole($request->role);
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
-    }
-
-    /**
-     * Display the specified user.
-     */
-    public function show(User $user)
-    {
-        return view('UserManagement.showuser', compact('user'));
-    }
-
-    /**
-     * Show the form for editing the specified user.
-     */
-    public function edit(User $user)
-    {
         $authUser = Auth::user();
-        if (!$authUser || $user->business_id !== $authUser->business_id) {
-            return redirect()->route('users.index')->with('error', 'Unauthorized access.');
-        }
 
+        // Fetch roles for the authenticated user's business
         $roles = Role::where('business_id', $authUser->business_id)->get();
 
-        return view('UserManagement.edituser', compact('user', 'roles'));
-    }
-
-    /**
-     * Update the specified user.
-     */
-    public function update(Request $request, User $user)
-    {
-        $authUser = Auth::user();
-        if (!$authUser || $user->business_id !== $authUser->business_id) {
-            return redirect()->route('users.index')->with('error', 'Unauthorized access.');
-        }
-
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
-            'password' => 'nullable|min:6|confirmed',
-            'role' => 'required|exists:roles,name',
-        ]);
-
-        $user->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'username' => $request->username,
-        ]);
-
-        // ✅ Update Password (If Provided)
-        if ($request->filled('password')) {
-            $user->update(['password' => Hash::make($request->password)]);
-        }
-
-        // ✅ Update Role
-        $user->syncRoles($request->role);
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
-    }
-
-    /**
-     * Remove the specified user.
-     */
-    public function destroy(User $user)
-    {
-        $authUser = Auth::user();
-        if (!$authUser || $user->business_id !== $authUser->business_id) {
-            return redirect()->route('users.index')->with('error', 'Unauthorized access.');
-        }
-
-        // ✅ Prevent Self-Deletion
-        if ($user->id === $authUser->id) {
-            return redirect()->route('users.index')->with('error', 'You cannot delete your own account.');
-        }
-
-        // ✅ Prevent Admin Deletion
-        if ($user->hasRole('admin')) {
-            return redirect()->route('users.index')->with('error', 'You cannot delete an admin account.');
-        }
-
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return view('UserManagement.adduser', compact('roles'));
     }
 }

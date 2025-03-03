@@ -5,32 +5,61 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Models\Business;
+use Illuminate\Support\Facades\DB;
 
 class PermissionSeeder extends Seeder
 {
     public function run()
     {
-        // ✅ Create Roles
-        $admin = Role::create(['name' => 'admin', 'business_id' => 0]);
-        $manager = Role::create(['name' => 'manager', 'business_id' => 0]);
-        $cashier = Role::create(['name' => 'cashier', 'business_id' => 0]);
-        
-
-        // ✅ Create Permissions
+        // ✅ Define Permissions
         $permissions = [
-            'view users',
-            'edit users',
-            'delete users',
-            'view roles',
-            'edit roles',
-            'delete roles',
+            'dashboard.view',
+            'roles.view', 'roles.create', 'roles.edit', 'roles.delete',
+            'users.view', 'users.create', 'users.edit', 'users.delete',
+            'admin.access'
         ];
 
+        // ✅ Ensure All Permissions Exist
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
-        // ✅ Assign Permissions to Admin
-        $admin->givePermissionTo($permissions);
+        // ✅ Fetch All Valid Businesses (Prevents Foreign Key Issues)
+        $businesses = Business::pluck('business_id')->toArray(); 
+
+        if (empty($businesses)) {
+            echo "❌ No businesses found! Skipping role assignment.\n";
+            return;
+        }
+
+        // ✅ Assign Roles & Permissions for Each Existing Business
+        foreach ($businesses as $businessId) {
+            // ✅ Check if Business Exists Before Assigning Roles
+            if (!Business::where('business_id', $businessId)->exists()) {
+                continue;
+            }
+
+            // ✅ Create Business-Specific Roles
+            $admin = Role::firstOrCreate([
+                'name' => 'admin',
+                'business_id' => $businessId,
+                'guard_name' => 'web'
+            ]);
+
+            $cashier = Role::firstOrCreate([
+                'name' => 'cashier',
+                'business_id' => $businessId,
+                'guard_name' => 'web'
+            ]);
+
+            // ✅ Assign All Permissions to Business-Specific Admin
+            $admin->syncPermissions($permissions);
+
+            // ✅ Assign Limited Permissions to Cashier
+            $cashier->syncPermissions(['users.view']);
+        }
+
+        echo "✅ Roles and Permissions assigned successfully!\n";
     }
 }

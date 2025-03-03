@@ -100,16 +100,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-
-        // ✅ Live Search with Debounce
         let debounceTimer;
-        $("#searchInput").on("input", function () {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(fetchRoles, 300);
-        });
 
         // ✅ Fetch roles via AJAX
-        function fetchRoles(url = "{{ route('allroles.index') }}") {
+        function fetchRoles(url = "{{ route('roles.index') }}") {
             let search = $("#searchInput").val();
             let perPage = $("#entriesSelect").val();
 
@@ -117,18 +111,31 @@
                 url: url,
                 type: "GET",
                 data: { search: search, per_page: perPage },
+                dataType: "json",
                 beforeSend: function () {
-                    $("#rolesTableContainer").css({ opacity: "1" });
+                    $("#rolesTableContainer").css({ opacity: "0.5" });
                 },
                 success: function (response) {
-                    $("#rolesTableContainer").html(response.html);
+                    if (response.html) {
+                        $("#rolesTableContainer").html(response.html);
+                    }
                     $("#rolesTableContainer").css({ opacity: "1" });
+
+                    // ✅ Reattach event listeners after AJAX update
+                    attachEvents();
                 },
-                error: function () {
-                    alert("❌ Error fetching roles. Please try again.");
+                error: function (xhr, status, error) {
+                    console.error("❌ AJAX Error:", xhr.responseText);
+                    alert("Error fetching roles. Check console for details.");
                 }
             });
         }
+
+        // ✅ Live Search with Debounce
+        $("#searchInput").on("input", function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchRoles, 300);
+        });
 
         // ✅ Change Entries Per Page
         $("#entriesSelect").on("change", function () {
@@ -143,11 +150,16 @@
         });
 
         // ✅ Handle Role Deletion
-        $(document).on("click", ".delete-btn", function () {
-            let confirmDelete = confirm('Are you sure you want to delete this role?');
-            if (!confirmDelete) return false;
-        });
+        function attachEvents() {
+            $(".delete-btn").off("click").on("click", function () {
+                let confirmDelete = confirm('Are you sure you want to delete this role?');
+                if (!confirmDelete) return false;
+            });
+        }
 
+        // ✅ Initial Attach for delete buttons
+        attachEvents();
     });
 </script>
+
 @endsection
