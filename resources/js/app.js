@@ -12,6 +12,7 @@ Alpine.start();
 
 // ✅ Import User Management Scripts
 import './usermanagement/users.js';
+import './usermanagement/roles.js';
 
 
 $(document).ready(function () {
