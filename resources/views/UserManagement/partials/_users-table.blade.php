@@ -1,57 +1,70 @@
-<table class="responsive-table">
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Last Login</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse ($users as $user)
-        <tr>
-            <td>{{ $user->username }}</td>
-            <td class="font-semibold">{{ $user->first_name }} {{ $user->last_name }}</td>
-            <td>{{ $user->getRoleNames()->implode(', ') ?: 'N/A' }}</td>
-            <td>{{ $user->email }}</td>
-            <td>
-                <span class="status-badge {{ $user->status == 'active' ? 'active' : 'inactive' }}">
-                    {{ ucfirst($user->status ?? 'Inactive') }}
-                </span>
-            </td>
-            <td>{{ $user->created_at ? $user->created_at->format('Y-m-d') : 'N/A' }}</td>
-            <td>{{ $user->last_login ? $user->last_login->format('Y-m-d H:i') : 'Never' }}</td>
-            <td class="actions">
-            <a href="{{ route('users.edit', $user->id) }}" class="action-btn edit">
-    <span class="material-icons">edit</span> 
-    <span class="btn-text">Edit</span>
-</a>
+<div id="usersTableContainer" data-fetch-url="{{ route('users.index') }}">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead class="bg-[#0E3EA8] text-white uppercase text-xs">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Username</th>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Role</th>
+                        <th class="px-4 py-3 text-left">Email</th>
+                        <th class="px-4 py-3 text-center">Status</th> <!-- ✅ Updated design -->
+                        <th class="px-4 py-3 text-center">Created At</th>
+                        <th class="px-4 py-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    @forelse ($users as $user)
+                    <tr class="border-b hover:bg-blue-50 transition">
+                        <td class="px-4 py-3">{{ $user->username }}</td>
+                        <td class="px-4 py-3 font-medium">{{ $user->first_name }} {{ $user->last_name }}</td>
+                        <td class="px-4 py-3 text-blue-600">{{ $user->getRoleNames()->implode(', ') ?: 'N/A' }}</td>
+                        <td class="px-4 py-3">{{ $user->email }}</td>
+
+                        <!-- ✅ Styled Active/Inactive Status -->
+                        <td class="px-4 py-3 text-center">
+    <span class="user-status px-3 py-1 text-xs font-semibold rounded-full border transition-all cursor-pointer"
+          data-user-id="{{ $user->id }}"
+          style="border: 2px solid {{ $user->status == 'active' ? '#10B981' : '#EF4444' }};
+                 color: {{ $user->status == 'active' ? '#10B981' : '#EF4444' }};">
+        {{ $user->status == 'active' ? 'Active' : 'Inactive' }}
+    </span>
+</td>
 
 
-                <button class="action-btn view"><span class="material-icons">visibility</span> <span class="btn-text">View</span></button>
-                <button class="action-btn delete delete-btn"
-        data-url="{{ route('users.destroy', $user->id) }}">
-    <span class="material-icons">delete</span>
-    <span class="btn-text">Delete</span>
-</button>
+                        <td class="px-4 py-3 text-center text-gray-600">
+                            {{ $user->created_at ? $user->created_at->format('Y-m-d') : 'N/A' }}
+                        </td>
 
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="8" class="text-center text-gray-500 py-4">No users found.</td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+                        <!-- ✅ Actions -->
+                        <td class="px-4 py-3 flex justify-center items-center gap-2">
+                            <a href="{{ route('users.edit', $user->id) }}" 
+                               class="action-btn edit bg-blue-600 text-white px-3 py-1 rounded-md flex items-center gap-1 hover:bg-blue-700 transition">
+                                <span class="material-icons">edit</span> Edit
+                            </a>
 
-<!-- ✅ Pagination -->
-<div class="flex justify-between items-center text-sm text-gray-600 mt-4">
-    <p class="text-xs">
+                            <button class="action-btn view bg-gray-600 text-white px-3 py-1 rounded-md flex items-center gap-1 hover:bg-gray-700 transition">
+                                <span class="material-icons">visibility</span> View
+                            </button>
+
+                            <button class="action-btn delete delete-btn bg-red-600 text-white px-3 py-1 rounded-md flex items-center gap-1 hover:bg-red-700 transition"
+                                    data-url="{{ route('users.destroy', $user->id) }}">
+                                <span class="material-icons">delete</span> Delete
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center text-gray-500 py-4">No users found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+       <!-- ✅ Pagination -->
+<div class="flex justify-between items-center text-xs text-gray-600 p-3 bg-gray-100">
+    <p>
         Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} 
         @if($users instanceof \Illuminate\Pagination\LengthAwarePaginator)
             of {{ $users->total() }}
@@ -59,19 +72,24 @@
         entries
     </p>
 
-    <div class="pagination-controls flex items-center space-x-2">
+    <div class="flex items-center gap-2">
         @if ($users->onFirstPage())
-            <button class="pagination-btn prev-btn disabled">← Prev</button>
+            <button class="px-3 py-1 bg-gray-300 text-gray-500 rounded-md cursor-not-allowed">← Prev</button>
         @else
-            <a href="{{ $users->previousPageUrl() }}" class="pagination-btn prev-btn">← Prev</a>
+            <a href="{{ $users->previousPageUrl() }}" 
+               class="pagination-link px-3 py-1 bg-[#0E3EA8] text-white rounded-md shadow-md hover:bg-blue-900 transition">← Prev</a>
         @endif
         
-        <span class="current-page">{{ $users->currentPage() }}</span>
+        <span class="text-gray-700 font-semibold">{{ $users->currentPage() }}</span>
 
         @if ($users->hasMorePages())
-            <a href="{{ $users->nextPageUrl() }}" class="pagination-btn next-btn">Next →</a>
+            <a href="{{ $users->nextPageUrl() }}" 
+               class="pagination-link px-3 py-1 bg-[#0E3EA8] text-white rounded-md shadow-md hover:bg-blue-900 transition">Next →</a>
         @else
-            <button class="pagination-btn next-btn disabled">Next →</button>
+            <button class="px-3 py-1 bg-gray-300 text-gray-500 rounded-md cursor-not-allowed">Next →</button>
         @endif
+    </div>
+</div>
+
     </div>
 </div>

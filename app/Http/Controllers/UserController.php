@@ -33,7 +33,7 @@ class UserController extends Controller
             });
         }
     
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 5); // ✅ Default to 5
         $users = $query->paginate($perPage)->appends([
             'search' => $request->search,
             'per_page' => $perPage
@@ -41,15 +41,15 @@ class UserController extends Controller
     
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('UserManagement.partials._users-table', compact('users'))->render()
+                'html' => view('UserManagement.partials._users-table', compact('users'))->render(),
             ]);
         }
     
-        // ✅ Pass success/error messages for Toastr (Ensures Flash Messages Are Available)
         return view('UserManagement.users', compact('users'))
                 ->with('success', session('success'))
                 ->with('error', session('error'));
     }
+    
     
 
     /**
@@ -236,5 +236,24 @@ public function destroy($id)
 
         return view('UserManagement.adduser', compact('roles'));
     }
+
+
+    
+    public function toggleStatus($id, Request $request)
+    {
+        $user = User::findOrFail($id);
+    
+        // Ensure request contains 'status'
+        if (!$request->has('status')) {
+            return response()->json(['success' => false, 'message' => 'Status missing'], 400);
+        }
+    
+        $user->status = $request->status;
+        $user->save();
+    
+        return response()->json(['success' => true, 'status' => $user->status]);
+    }
+    
+    
     
 }

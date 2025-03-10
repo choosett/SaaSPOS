@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\QueryException;
 
 class RoleController extends Controller
 {
@@ -51,55 +50,44 @@ class RoleController extends Controller
     }
 
     /**
-     * Store a newly created role.
+     * Store a newly created role (Merged with `createRole` method).
      */
     public function store(Request $request)
     {
+        Log::info("🔍 Role Creation Request Data:", $request->all());
+
         $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name',
+            'name' => 'required|string|max:255',
+            'guard_name' => 'nullable|string|max:255',
             'permissions' => 'nullable|array',
         ]);
-    
+
         $user = Auth::user();
         if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            Log::error("❌ Role Creation Failed: No authenticated user.");
+            return redirect()->back()->with('error', 'Unauthorized. Please log in.');
         }
-    
+
         try {
-            // ✅ Create Role
-            $role = Role::create([
-                'business_id' => $user->business_id,
+            // ✅ Create role only if it doesn't exist within the same business
+            $role = Role::firstOrCreate([
                 'name' => $request->name,
-                'guard_name' => 'web',
+                'guard_name' => $request->guard_name ?? 'web',
+                'business_id' => $user->business_id,
             ]);
-    
-            // ✅ Assign Permissions if Provided
+
+            // ✅ Assign permissions if provided
             if (!empty($request->permissions)) {
                 $role->syncPermissions($request->permissions);
             }
-    
-            Log::info("✅ Role '{$role->name}' created by User ID: {$user->id}");
-    
-            // ✅ Return JSON Response (For AJAX Requests)
-            if ($request->ajax()) {
-                return response()->json(['success' => true, 'message' => 'Role created successfully.']);
-            }
-    
-            // ✅ Redirect with Success Message (For Non-AJAX Requests)
-            return redirect()->route('roles.index')->with('success', 'New Role Created Successfully.');
+
+            Log::info("✅ Role Created Successfully:", $role->toArray());
+            return redirect()->back()->with('success', 'Role created successfully.');
         } catch (\Exception $e) {
-            Log::error("❌ Role creation failed: " . $e->getMessage());
-    
-            // ✅ Return JSON Error Response (For AJAX)
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Failed to create role. Please try again.'], 500);
-            }
-    
-            // ✅ Redirect with Error Message (For Non-AJAX)
+            Log::error("❌ Role Creation Failed: " . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to create role. Please try again.');
         }
     }
-    
 
     /**
      * Show the form for editing the specified role.
@@ -107,71 +95,59 @@ class RoleController extends Controller
     public function edit($id)
     {
         $authUser = Auth::user();
-    
-        // ✅ Fetch the correct role by ID
         $role = Role::where('id', $id)
                     ->where('business_id', $authUser->business_id)
                     ->first();
-    
+
         if (!$role) {
             return redirect()->route('roles.index')->with('error', 'Role not found.');
         }
-    
-        // ✅ Fetch all available permissions
+
         $permissions = Permission::all();
         $rolePermissions = $role->permissions->pluck('name')->toArray();
-    
-        \Log::info("✅ Sending Role Data to Blade", [
+
+        Log::info("✅ Sending Role Data to Blade", [
             'Role' => $role->toArray(),
             'Permissions' => $rolePermissions
         ]);
-    
-        // ✅ Pass data correctly to the view
+
         return view('UserManagement.roles-edit', compact('role', 'permissions', 'rolePermissions'));
     }
-    
-    
 
     /**
      * Update the specified role.
      */
     public function update(Request $request, $id)
-{
-    $request->validate([
-        'name' => 'required|string|max:255|unique:roles,name,' . $id,
-        'permissions' => 'nullable|array',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name,' . $id . ',id,business_id,' . Auth::user()->business_id,
+            'permissions' => 'nullable|array',
+        ]);
 
-    $authUser = Auth::user();
+        $authUser = Auth::user();
+        $role = Role::where('id', $id)
+                    ->where('business_id', $authUser->business_id)
+                    ->first();
 
-    // ✅ Fetch the role
-    $role = Role::where('id', $id)
-                ->where('business_id', $authUser->business_id)
-                ->first();
+        if (!$role) {
+            return redirect()->route('roles.index')->with('error', 'Role not found.');
+        }
 
-    if (!$role) {
-        return redirect()->route('roles.index')->with('error', 'Role not found.');
+        try {
+            // ✅ Update role name
+            $role->update(['name' => $request->name]);
+
+            // ✅ Update role permissions
+            $role->syncPermissions($request->permissions ?? []);
+
+            Log::info("✅ Role '{$role->name}' updated by User ID: {$authUser->id}");
+
+            return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
+        } catch (\Exception $e) {
+            Log::error("❌ Role update failed: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update role. Please try again.');
+        }
     }
-
-    try {
-        // ✅ Update role name
-        $role->update(['name' => $request->name]);
-
-        // ✅ Update role permissions
-        $role->syncPermissions($request->permissions ?? []);
-
-        Log::info("✅ Role '{$role->name}' updated by User ID: {$authUser->id}");
-
-        // ✅ Redirect to roles index page with success message
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
-    } catch (\Exception $e) {
-        Log::error("❌ Role update failed: " . $e->getMessage());
-
-        return redirect()->back()->with('error', 'Failed to update role. Please try again.');
-    }
-}
-
-    
 
     /**
      * Remove the specified role.
@@ -179,29 +155,22 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $authUser = Auth::user();
-    
-        // ✅ Find the role
         $role = Role::where('id', $id)
                     ->where('business_id', $authUser->business_id)
                     ->first();
-    
+
         if (!$role) {
             return redirect()->route('roles.index')->with('error', 'Role not found.');
         }
-    
+
         try {
-            // ✅ Delete role
             $role->delete();
-    
             Log::info("✅ Role '{$role->name}' deleted by User ID: {$authUser->id}");
-    
-            // ✅ Redirect back with success message
+
             return redirect()->route('roles.index')->with('success', 'Role deleted successfully.');
         } catch (\Exception $e) {
             Log::error("❌ Role deletion failed: " . $e->getMessage());
-    
             return redirect()->route('roles.index')->with('error', 'Failed to delete role. Please try again.');
         }
     }
-    
 }

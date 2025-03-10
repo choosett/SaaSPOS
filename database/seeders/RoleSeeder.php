@@ -1,37 +1,42 @@
 <?php
 
-namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use App\Models\Business;
 
 class RoleSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // ✅ সমস্ত বিদ্যমান ব্যবসা লোড করুন
-        $businesses = Business::pluck('business_id');
+        // ✅ Get the first business (make sure at least one exists)
+        $business = Business::first();
 
-        if ($businesses->isEmpty()) {
-            echo "❌ কোনো ব্যবসা নেই! রোল তৈরি করা যাবে না।\n";
-            return;
+        if (!$business) {
+            $business = Business::create([
+                'business_id' => strtoupper(substr(md5(uniqid()), 0, 8)), // Generate a random business ID
+                'name' => 'Default Business',
+            ]);
         }
 
-        foreach ($businesses as $businessId) {
-            Role::firstOrCreate([
-                'name' => 'Admin',
-                'guard_name' => 'web',
-                'business_id' => $businessId
-            ]);
+        // ✅ Create roles under the first business
+        Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'web',
+            'business_id' => $business->business_id,
+        ]);
 
-            Role::firstOrCreate([
-                'name' => 'Cashier',
-                'guard_name' => 'web',
-                'business_id' => $businessId
-            ]);
+        Role::firstOrCreate([
+            'name' => 'manager',
+            'guard_name' => 'web',
+            'business_id' => $business->business_id,
+        ]);
 
-            echo "✅ Roles assigned successfully to Business ID: $businessId\n";
-        }
+        Role::firstOrCreate([
+            'name' => 'cashier',
+            'guard_name' => 'web',
+            'business_id' => $business->business_id,
+        ]);
+
+        echo "✅ Roles seeded successfully!";
     }
 }

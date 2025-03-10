@@ -4,6 +4,8 @@
 
 @section('content')
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <!-- ✅ Form Container -->
 <div class="flex justify-center items-start min-h-screen mt-0 pt-0">
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-3xl"> 
@@ -103,81 +105,18 @@
 @endsection
 
 @section('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-
-        // ✅ Live Username Availability Check
-        $("#usernameInput").on("input", function () {
-            let username = $(this).val().trim();
-            if (username.length < 3) {
-                $("#usernameAvailability").text("").removeClass("text-green-500 text-red-500");
-                return;
-            }
-
-            $.ajax({
-                url: "{{ route('users.checkUsername') }}",
-                type: "GET",
-                data: { username: username },
-                success: function (response) {
-                    if (response.available) {
-                        $("#usernameAvailability").text("✅ Username available").addClass("text-green-500").removeClass("text-red-500");
-                    } else {
-                        $("#usernameAvailability").text("❌ Username already taken").addClass("text-red-500").removeClass("text-green-500");
-                    }
-                }
-            });
-        });
-
-        // ✅ Live Email Availability Check
-        $("#emailInput").on("input", function () {
-            let email = $(this).val().trim();
-            if (!email.includes("@") || email.length < 5) {
-                $("#emailAvailability").text("").removeClass("text-green-500 text-red-500");
-                return;
-            }
-
-            $.ajax({
-                url: "{{ route('users.checkEmail') }}",
-                type: "GET",
-                data: { email: email },
-                success: function (response) {
-                    if (response.available) {
-                        $("#emailAvailability").text("✅ Email available").addClass("text-green-500").removeClass("text-red-500");
-                    } else {
-                        $("#emailAvailability").text("❌ Email already in use").addClass("text-red-500").removeClass("text-green-500");
-                    }
-                }
-            });
-        });
-
-        // ✅ Live Password Match Check
-        $("#passwordInput, #confirmPasswordInput").on("input", function () {
-            let password = $("#passwordInput").val();
-            let confirmPassword = $("#confirmPasswordInput").val();
-            let message = $("#passwordMatchMessage");
-
-            if (password !== "" || confirmPassword !== "") {
-                if (password === confirmPassword) {
-                    message.text("✅ Passwords match").addClass("text-green-500").removeClass("text-red-500");
-                } else {
-                    message.text("❌ Passwords do not match").addClass("text-red-500").removeClass("text-green-500");
-                }
-            } else {
-                message.text("");
-            }
-        });
-
-        // ✅ Toastr Success Notification
-        @if(session('success'))
-            toastr.success("{{ session('success') }}", "Success", {
-                positionClass: "toast-top-right",
-                timeOut: 3000,
-                progressBar: true,
-                closeButton: true,
-            });
-        @endif
-
-    });
+    window.csrfToken = "{{ csrf_token() }}";
+    window.userIndexRoute = "{{ route('users.index') }}"; // ✅ Users List Page
+    window.userEditRoute = "{{ route('users.update', $editingUser->id) }}"; // ✅ Edit User Route
+    window.checkUsernameRoute = "{{ route('users.checkUsername') }}";
+    window.checkEmailRoute = "{{ route('users.checkEmail') }}";
+    window.successMessage = "{{ session('success') }}";
 </script>
+
+<!-- ✅ Fix jQuery Integrity Issue -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- ✅ Include users.js -->
+<script src="{{ asset('js/users.js') }}"></script>
 @endsection

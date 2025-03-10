@@ -1,11 +1,18 @@
-// ✅ Import Dependencies
+// ✅ Import Bootstrap, jQuery, Alpine.js, and Other Dependencies
 import './bootstrap';
 import Alpine from 'alpinejs';
 import $ from 'jquery';
 
+// ✅ Make jQuery Global (for usage across scripts)
+window.$ = window.jQuery = $;
+
 // ✅ Initialize Alpine.js
 window.Alpine = Alpine;
 Alpine.start();
+
+// ✅ Import User Management Scripts
+import './usermanagement/users.js';
+
 
 $(document).ready(function () {
     console.log("✅ jQuery Loaded:", typeof jQuery !== "undefined");

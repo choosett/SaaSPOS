@@ -24,6 +24,8 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'status',
+        'last_activity',
     ];
 
     /**
@@ -44,13 +46,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'last_activity' => 'datetime',
     ];
 
     /**
-     * ✅ Force Laravel to always use 'id' in route model binding.
+     * Force Laravel to always use 'id' in route model binding.
      */
     public function getRouteKeyName()
     {
-        return 'id'; // Ensure Laravel loads users by 'id', not 'username'
+        return 'id';
     }
 }

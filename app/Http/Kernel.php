@@ -22,10 +22,14 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 
-// ✅ Spatie Permission Middleware (Ensure these are correctly imported)
+// ✅ Spatie Permission Middleware
 use Spatie\Permission\Middlewares\RoleMiddleware;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
+
+// ✅ Custom Middleware
+use App\Http\Middleware\ScopeRolesToBusiness;
+use App\Http\Middleware\UpdateUserActivity;
 
 class Kernel extends HttpKernel
 {
@@ -44,6 +48,9 @@ class Kernel extends HttpKernel
         HandlePrecognitiveRequests::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
+
+        // ✅ Restrict roles to business_id
+        ScopeRolesToBusiness::class,
     ];
 
     /**
@@ -56,16 +63,17 @@ class Kernel extends HttpKernel
             ValidateCsrfToken::class,
             HandlePrecognitiveRequests::class,
             SubstituteBindings::class,
+            UpdateUserActivity::class, // ✅ Auto-update user activity
         ],
 
         'api' => [
-            EnsureFrontendRequestsAreStateful::class, // ✅ Sanctum API authentication
+            EnsureFrontendRequestsAreStateful::class,
             SubstituteBindings::class,
         ],
     ];
 
     /**
-     * Middleware aliases (previously `$routeMiddleware` in older Laravel versions).
+     * Middleware aliases.
      */
     protected $middlewareAliases = [
         'auth' => Authenticate::class,
@@ -78,10 +86,12 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'bindings' => SubstituteBindings::class,
 
-        // ✅ Correct: Uses full namespace for Spatie middleware
-       'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        // ✅ Spatie Permissions Middleware
+        'role' => RoleMiddleware::class,
+        'permission' => PermissionMiddleware::class,
+        'role_or_permission' => RoleOrPermissionMiddleware::class,
 
+        // ✅ Custom Middleware for Business Role Scoping
+        'scopeRoles' => ScopeRolesToBusiness::class,
     ];
 }
