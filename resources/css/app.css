@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 /* ✅ Page Container */
 .page-container {
     max-width: 1100px;
@@ -480,3 +482,36 @@
 .text-red-500 { color: #EF4444; }
 
 
+
+/* ✅ Custom Checkbox Styling */
+.custom-checkbox {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border: 2px solid #017e84;
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+    outline: none; /* Removes default focus */
+    transition: all 0.2s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.custom-checkbox:hover {
+    border-color: #015c60; /* Darker border on hover */
+    background-color: rgba(1, 126, 132, 0.1); /* Light background effect */
+}
+
+/* ✅ Checked State */
+.custom-checkbox:checked {
+    background-color: #017e84;
+    border-color: #017e84;
+}
+
+/* ✅ Remove Blue Focus Outline on Hover/Click */
+.custom-checkbox:focus,
+.custom-checkbox:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(1, 126, 132, 0.3); /* Optional: Subtle brand-colored glow */
+}

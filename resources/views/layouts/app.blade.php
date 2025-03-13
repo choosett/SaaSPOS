@@ -17,12 +17,33 @@
    <!-- ✅ Ensure jQuery is already loaded -->
    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+   <!-- ✅ Required JS Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="{{ asset('js/supplier.js') }}"></script>
+
+
 
 <!-- ✅ Toastr CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 <!-- ✅ Toastr JS (Ensure it loads after jQuery) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<!-- ✅ Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@400;500&display=swap">
+<style>
+    th {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+    }
+    td {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 400;
+    }
+</style>
 
 
 

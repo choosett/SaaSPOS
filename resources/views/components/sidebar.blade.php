@@ -45,7 +45,7 @@
                                             ]],
 
                     ["name" => "Contacts", "icon" => "contacts", "submenu" => [
-                        ["name" => "Suppliers", "link" => "#"],
+                        ["name" => "Suppliers", "link" => route('suppliers.index')], 
                         ["name" => "Customers", "link" => "#"],
                         ["name" => "Membership", "link" => "#"],
                         ["name" => "Import Contacts", "link" => "#"]

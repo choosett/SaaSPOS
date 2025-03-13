@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pikaday Calendar Component</title>
+
+    <!-- ✅ Load Pikaday Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/css/pikaday.min.css">
+
+    <!-- ✅ Custom CSS for Calendar Only -->
+    <style>
+        /* 🔹 Pikaday Calendar Styling */
+        .pika-single {
+            border: 1px solid #017e84 !important;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background: white;
+            padding: 8px;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* 🔹 Force Selected Date to Brand Color */
+        .pika-single .pika-day.is-selected,
+        .pika-single .pika-day.is-selected:hover,
+        .pika-single .pika-day.is-selected:focus {
+            background-color: #017e84 !important; /* Brand color */
+            color: white !important;
+            font-weight: bold !important;
+            border-radius: 5px;
+            border: 2px solid #015a5e !important; /* Slight contrast */
+        }
+
+        /* 🔹 Force Today's Date to Brand Color */
+        .pika-single .pika-day.today {
+            border: 2px solid #017e84 !important;
+            background: rgba(1, 126, 132, 0.2) !important;
+            border-radius: 5px;
+            color: #017e84 !important;
+            font-weight: bold !important;
+        }
+
+        /* 🔹 Ensure Hover Effect Uses Brand Color */
+        .pika-single .pika-day:hover {
+            background: rgba(1, 126, 132, 0.3) !important;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        /* 🔹 Navigation Buttons */
+        .pika-prev, .pika-next {
+            color: #017e84 !important;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* 🔹 Month Title */
+        .pika-title {
+            color: #017e84 !important;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* 🔹 Weekday Names */
+        .pika-table th {
+            color: #017e84 !important;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ✅ Pikaday JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/pikaday.min.js"></script>
+
+    <!-- ✅ Initialize Pikaday -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("✅ Initializing Pikaday for all .pikaday-input fields...");
+
+            document.querySelectorAll(".pikaday-input").forEach(function(input) {
+                new Pikaday({
+                    field: input,
+                    format: 'YYYY-MM-DD',
+                    firstDay: 1,
+                    showWeekNumber: false
+                });
+            });
+
+            console.log("✅ Pikaday initialized successfully!");
+        });
+    </script>
+
+</body>
+</html>

@@ -6,7 +6,6 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-
 <div class="page-container">
     <!-- ✅ Page Header -->
     <div class="flex justify-between items-center mb-4">
@@ -14,7 +13,7 @@
         
         <!-- ✅ Add User Button -->
         <a href="{{ route('users.create') }}" 
-           class="bg-[rgb(14,62,168)] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-900 transition duration-300 shadow-md">
+           class="bg-[#017e84] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-[#015a5e] transition duration-300 shadow-md">
             <span class="material-icons">add</span> Add User
         </a>
     </div>
@@ -25,7 +24,7 @@
         <!-- ✅ Entries Dropdown -->
         <div class="flex items-center gap-4">
             <span class="text-sm text-gray-600">Show</span>
-            <select class="border border-gray-300 rounded-lg px-3 py-1.5 shadow-md focus:ring focus:ring-blue-400 w-20" id="entriesSelect">
+            <select class="border border-gray-300 rounded-lg px-3 py-1.5 shadow-md focus:ring focus:ring-[#017e84] w-20" id="entriesSelect">
                 <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5</option>
                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                 <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
@@ -38,11 +37,11 @@
         <!-- ✅ Search Bar -->
         <div class="relative">
             <input type="text" 
-                   class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg text-sm px-5 py-3 shadow-sm w-72" 
+                   class="border border-gray-300 focus:ring-[#017e84] focus:border-[#017e84] rounded-lg text-sm px-5 py-3 shadow-sm w-72" 
                    id="searchInput" 
                    placeholder="Search users..." 
                    value="{{ request('search') }}">
-            <span class="absolute right-3 top-3 text-[rgb(14,62,168)] material-icons">search</span>
+            <span class="absolute right-3 top-3 text-[#017e84] material-icons">search</span>
         </div>
     </div>
 

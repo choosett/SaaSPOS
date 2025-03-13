@@ -9,7 +9,7 @@
 <!-- ✅ Form Container -->
 <div class="flex justify-center items-start min-h-screen mt-0 pt-0">
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-3xl"> 
-        <h1 class="text-2xl font-bold mb-6 text-center text-[#0E3EA8]">Edit User</h1>
+        <h1 class="text-2xl font-bold mb-6 text-center text-[#017e84]">Edit User</h1>
 
         <!-- ✅ Show Validation Errors -->
         @if ($errors->any())
@@ -97,7 +97,9 @@
             </div>
 
             <!-- ✅ Submit Button -->
-            <button type="submit" id="submitButton" class="primary-btn w-full mt-6">Update User</button>
+            <button type="submit" id="submitButton" class="bg-[#017e84] text-white px-6 py-2 rounded-md shadow-md hover:bg-[#015a5e] transition w-full mt-6">
+                Update User
+            </button>
         </form>
     </div>
 </div>

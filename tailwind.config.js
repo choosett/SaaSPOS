@@ -19,10 +19,11 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                inter: ['Inter', 'sans-serif'],  // ✅ Add Inter for table headers
+                roboto: ['Roboto', 'sans-serif'], // ✅ Add Roboto for table data
             },
         },
     },
 
     plugins: [forms],
 };
-

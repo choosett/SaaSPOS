@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pikaday Calendar - Brand Theme</title>
+
+    <!-- Pikaday CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/css/pikaday.min.css">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .calendar-container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-input {
+            border: 1px solid #017e84;
+            border-radius: 5px;
+            padding: 10px;
+            width: 220px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            cursor: pointer; /* Ensure pointer changes on hover */
+        }
+
+        .calendar-input:focus {
+            border-color: #017e84;
+            box-shadow: 0px 0px 6px rgba(1, 126, 132, 0.5);
+        }
+
+        /* Ensure the calendar is not hidden */
+        .pika-single {
+            border: 1px solid #017e84 !important;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .pika-day.is-selected,
+        .pika-day.is-selected:hover {
+            background: #017e84 !important;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .pika-day.today {
+            border: 1px solid #017e84 !important;
+            background: rgba(1, 126, 132, 0.2) !important;
+            border-radius: 5px;
+            color: #017e84 !important;
+            font-weight: bold;
+        }
+
+        .pika-day:hover {
+            background: rgba(1, 126, 132, 0.1) !important;
+        }
+
+        .pika-prev, .pika-next {
+            color: #017e84 !important;
+        }
+
+        .pika-title {
+            color: #017e84 !important;
+        }
+
+        .pika-table th {
+            color: #017e84 !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="calendar-container">
+        <h2 style="color: #017e84;">Pick a Date</h2>
+        <input type="text" id="calendar" class="calendar-input" placeholder="Select a date">
+    </div>
+
+    <!-- Pikaday JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/pikaday.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const calendarInput = document.getElementById("calendar");
+
+            if (calendarInput) {
+                new Pikaday({
+                    field: calendarInput,
+                    format: 'YYYY-MM-DD',
+                    firstDay: 1,
+                    showWeekNumber: true
+                });
+
+                console.log("Pikaday initialized!"); // Debugging message
+            } else {
+                console.error("Calendar input field not found!");
+            }
+        });
+    </script>
+
+</body>
+</html>

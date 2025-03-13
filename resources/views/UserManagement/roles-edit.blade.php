@@ -11,7 +11,7 @@
         
         <!-- ✅ Back to Roles Button -->
         <a href="{{ route('roles.index') }}" 
-           class="bg-[#0E3EA8] text-white px-5 py-2 rounded-md flex items-center gap-2 hover:bg-blue-900 transition duration-300 shadow-md">
+           class="bg-[#017e84] text-white px-5 py-2 rounded-md flex items-center gap-2 hover:bg-[#015a5e] transition duration-300 shadow-md">
             <span class="material-icons">arrow_back</span> Back to Roles
         </a>
     </div>
@@ -48,7 +48,7 @@
             <!-- ✅ Role Name -->
             <div class="mb-6">
                 <label class="block font-semibold mb-2 text-gray-700">* Role Name</label>
-                <input type="text" name="name" class="border border-gray-300 w-full rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-400" required placeholder="Enter Role Name" value="{{ $role->name }}">
+                <input type="text" name="name" class="border border-gray-300 w-full rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-[#017e84]" required placeholder="Enter Role Name" value="{{ $role->name }}">
             </div>
 
             <!-- ✅ Permissions Section -->
@@ -61,12 +61,12 @@
                     <div class="p-4 bg-white shadow-md rounded-lg">
                         <h3 class="font-semibold text-gray-800 mb-3 flex justify-between">
                             Dashboard Access
-                            <label class="text-blue-700 font-medium cursor-pointer">
-                                <input type="checkbox" class="select-all-module rounded accent-blue-600" data-module="dashboard"> Select All
+                            <label class="text-[#017e84] font-medium cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox select-all-module" data-module="dashboard"> Select All
                             </label>
                         </h3>
                         <label class="flex items-center gap-3">
-                            <input type="checkbox" name="permissions[]" value="dashboard.view" class="permission-checkbox dashboard rounded accent-blue-600" 
+                            <input type="checkbox" name="permissions[]" value="dashboard.view" class="custom-checkbox permission-checkbox dashboard"
                             {{ in_array('dashboard.view', $rolePermissions) ? 'checked' : '' }}>
                             <span class="text-gray-700 text-sm">Access Dashboard</span>
                         </label>
@@ -76,14 +76,14 @@
                     <div class="p-4 bg-white shadow-md rounded-lg">
                         <h3 class="font-semibold text-gray-800 mb-3 flex justify-between">
                             Roles Management
-                            <label class="text-blue-700 font-medium cursor-pointer">
-                                <input type="checkbox" class="select-all-module rounded accent-blue-600" data-module="roles"> Select All
+                            <label class="text-[#017e84] font-medium cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox select-all-module" data-module="roles"> Select All
                             </label>
                         </h3>
                         <div class="space-y-2">
                             @foreach(['roles.view' => 'View Roles', 'roles.create' => 'Add Role', 'roles.edit' => 'Edit Role', 'roles.delete' => 'Delete Role'] as $value => $label)
                                 <label class="flex items-center gap-3">
-                                    <input type="checkbox" name="permissions[]" value="{{ $value }}" class="permission-checkbox roles rounded accent-blue-600"
+                                    <input type="checkbox" name="permissions[]" value="{{ $value }}" class="custom-checkbox permission-checkbox roles"
                                     {{ in_array($value, $rolePermissions) ? 'checked' : '' }}>
                                     <span class="text-gray-700 text-sm">{{ $label }}</span>
                                 </label>
@@ -95,14 +95,14 @@
                     <div class="p-4 bg-white shadow-md rounded-lg">
                         <h3 class="font-semibold text-gray-800 mb-3 flex justify-between">
                             User Management
-                            <label class="text-blue-700 font-medium cursor-pointer">
-                                <input type="checkbox" class="select-all-module rounded accent-blue-600" data-module="users"> Select All
+                            <label class="text-[#017e84] font-medium cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox select-all-module" data-module="users"> Select All
                             </label>
                         </h3>
                         <div class="space-y-2">
                             @foreach(['users.view' => 'View Users', 'users.create' => 'Add User', 'users.edit' => 'Edit User', 'users.delete' => 'Delete User'] as $value => $label)
                                 <label class="flex items-center gap-3">
-                                    <input type="checkbox" name="permissions[]" value="{{ $value }}" class="permission-checkbox users rounded accent-blue-600"
+                                    <input type="checkbox" name="permissions[]" value="{{ $value }}" class="custom-checkbox permission-checkbox users"
                                     {{ in_array($value, $rolePermissions) ? 'checked' : '' }}>
                                     <span class="text-gray-700 text-sm">{{ $label }}</span>
                                 </label>
@@ -114,7 +114,7 @@
 
             <!-- ✅ Submit Button -->
             <div class="mt-6 text-right">
-                <button type="submit" class="bg-[#0E3EA8] text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-900 transition duration-300">
+                <button type="submit" class="bg-[#017e84] text-white px-6 py-2 rounded-md shadow-md hover:bg-[#015a5e] transition duration-300">
                     Update Role
                 </button>
             </div>

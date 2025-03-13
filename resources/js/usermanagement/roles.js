@@ -4,7 +4,8 @@ $(document).ready(function () {
     let csrfToken = $('meta[name="csrf-token"]').attr("content");
 
     // ✅ Check if roles table exists before setting roleIndexRoute
-    let roleIndexRoute = $("#rolesTableContainer").data("fetch-url") || "{{ route('roles.index') }}";
+    let roleIndexRoute = $("#rolesTableContainer").data("fetch-url") || roleIndexRoute;
+
 
     // ✅ Ensure Default Entries is Set to 5 for Roles Table
     if (!localStorage.getItem("perPage")) {

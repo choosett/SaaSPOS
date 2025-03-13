@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiAuthController;
+use App\Http\Controllers\Api\CourierCheckController;
+
+
+Route::post('/courier-check', [CourierCheckController::class, 'checkCourier']);
+
 
 /**
  * @OA\Info(
@@ -19,7 +24,7 @@ use App\Http\Controllers\Api\ApiAuthController;
  * )
  *
  * @OA\Server(
- *      url="http://127.0.0.1:8001",
+ *      url="http://127.0.0.1:8000",
  *      description="Local Development Server"
  * )
  *
@@ -88,4 +93,8 @@ Route::middleware('auth:sanctum')->group(function () {
 // 🔹 Fallback Route (Handles 404 for unknown API endpoints)
 Route::fallback(function () {
     return response()->json(['message' => 'API route not found'], 404);
+});
+
+Route::get('/users', function () {
+    return response()->json(User::select('id', 'username')->get());
 });
