@@ -15,6 +15,10 @@ import './usermanagement/users.js';
 import './usermanagement/roles.js';
 import './supplier.js';
 
+import * as BarikoiMapWidget from "barikoi-map-widget";
+
+window.BarikoiMapWidget = BarikoiMapWidget;
+
 
 
 $(document).ready(function () {
@@ -106,4 +110,18 @@ $(document).ready(function () {
     });
 
     console.log("🎯 Sidebar & Submenu (ScaleY) Initialized!");
+
+    async function testAutocomplete(query) {
+        try {
+            const response = await autocomplete({ q: query });
+            console.log("Autocomplete Results:", response);
+        } catch (error) {
+            console.error("Autocomplete Error:", error);
+        }
+    }
+    
+    // ✅ Test with a location name
+    testAutocomplete("Gulshan");
+    
+
 });

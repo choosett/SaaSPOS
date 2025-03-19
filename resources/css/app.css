@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
+/* ============================================= */
+/* ✅ PAGE CONTAINER & GENERAL STYLING */
+/* ============================================= */
 
 /* ✅ Page Container */
 .page-container {
@@ -18,23 +20,28 @@
 .page-title {
     font-size: 22px;
     font-weight: 700;
-    color: #0E3EA8;
+    color: #017e84; /* Brand Color */
 }
 
-/* ✅ Buttons */
+/* ============================================= */
+/* ✅ BUTTONS */
+/* ============================================= */
+
+/* ✅ Primary Button */
 .primary-btn {
-    background: #0E3EA8;
+    background: #017e84; /* Brand Color */
     color: white;
-    padding: 8px 14px;
+    padding: 10px 16px;
     border-radius: 6px;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 6px;
+    transition: all 0.3s ease-in-out;
 }
 
 .primary-btn:hover {
-    background: #0C359A;
+    background: #015c60; /* Slightly Darker Brand Color */
 }
 
 /* ✅ Small Action Buttons */
@@ -44,7 +51,7 @@
     justify-content: center;
     font-size: 12px;
     font-weight: 600;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 6px;
     border: 1px solid transparent;
     gap: 6px;
@@ -53,14 +60,14 @@
 
 .action-btn.edit {
     background: white;
-    color: #7C3AED;
-    border-color: #7C3AED;
+    color: #017e84;
+    border-color: #017e84;
 }
 
 .action-btn.view {
     background: white;
-    color: #3B82F6;
-    border-color: #3B82F6;
+    color: #0E3EA8;
+    border-color: #0E3EA8;
 }
 
 .action-btn.delete {
@@ -70,12 +77,12 @@
 }
 
 .action-btn.edit:hover {
-    background: #7C3AED;
+    background: #015c60;
     color: white;
 }
 
 .action-btn.view:hover {
-    background: #3B82F6;
+    background: #0E3EA8;
     color: white;
 }
 
@@ -84,7 +91,10 @@
     color: white;
 }
 
-/* ✅ Status Badges */
+/* ============================================= */
+/* ✅ STATUS BADGES */
+/* ============================================= */
+
 .status-badge {
     font-size: 12px;
     font-weight: 600;
@@ -107,6 +117,7 @@
     border-color: #EF4444;
 }
 
+/* ✅ Hover Effects */
 .status-badge.active:hover {
     background: #22C55E;
     color: white;
@@ -117,7 +128,10 @@
     color: white;
 }
 
-/* ✅ Table Styling */
+/* ============================================= */
+/* ✅ TABLE STYLING */
+/* ============================================= */
+
 .table-container {
     border: 1px solid #E5E7EB;
     border-radius: 6px;
@@ -133,12 +147,13 @@
 /* ✅ Reduced Cell Padding */
 .responsive-table th,
 .responsive-table td {
-    padding: 6px 8px;
+    padding: 8px 10px;
     text-align: left;
 }
 
 .responsive-table thead {
-    background: #F9FAFB;
+    background: #017e84; /* Brand Color */
+    color: white;
 }
 
 /* ✅ Centering Action Buttons */
@@ -148,370 +163,332 @@
     gap: 6px;
 }
 
-/* ✅ Responsive Table */
-@media (max-width: 768px) {
-    .table-container {
-        overflow-x: auto;
-    }
-    .responsive-table th,
-    .responsive-table td {
-        padding: 4px 6px;
-    }
-    .btn-text {
-        display: none;
-    }
-}
-/* ✅ Pagination Styling */
-.pagination-container {
-    font-size: 12px; /* Smaller text */
-    padding: 8px 0;
+/* ============================================= */
+/* ✅ MODERN DROPDOWN STYLING */
+/* ============================================= */
+
+.dropdown-container {
+    position: relative;
+    width: 100%;
 }
 
-.pagination-controls {
+.dropdown-button {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #017e84;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
     display: flex;
     align-items: center;
-    gap: 5px;
+    justify-content: space-between;
+    transition: 0.3s;
 }
 
-/* ✅ Pagination Buttons */
-.pagination-btn {
-    background: #F3F4F6; /* Light gray */
-    color: #374151; /* Dark gray */
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #D1D5DB;
-    transition: all 0.2s ease-in-out;
+.dropdown-button i {
+    color: #017e84;
 }
 
-.pagination-btn:hover {
-    background: #E5E7EB;
+/* ✅ Hover Effect */
+.dropdown-button:hover {
+    background: #f0f9fa;
+    border-color: #015c60;
 }
 
-/* ✅ Active Page Indicator */
-.current-page {
-    background: #0E3EA8;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 12px;
+/* ============================================= */
+/* ✅ COURIER SVG ICON STYLING */
+/* ============================================= */
+
+.courier-icon {
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* ============================================= */
+/* ✅ GLOBAL STYLES - MODALS & INPUT FIELDS */
+/* ============================================= */
+
+/* ✅ Modal Background Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* ✅ Hide Modal by Default */
+.hidden {
+    display: none;
+}
+
+/* ✅ Modal Box */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* ✅ Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    color: gray;
+    font-size: 18px;
+}
+
+/* ✅ Modal Header */
+.modal-title {
+    font-size: 18px;
     font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #017e84;
 }
 
-/* ✅ Entries Dropdown */
-.entries-dropdown {
+/* ✅ Input Fields (Box Design) */
+.input-box {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #f8f8f8;
+    transition: 0.3s;
+}
+
+.input-box:focus {
+    border-color: #017e84;
+    background: white;
+    outline: none;
+}
+
+/* ============================================= */
+/* ✅ API & SETTINGS BUTTON STYLES */
+/* ============================================= */
+
+.btn-api,
+.btn-settings {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ✅ API Settings Button */
+.btn-api {
+    background: white;
+    color: #017e84;
+    border: 2px solid #017e84;
+}
+
+.btn-api:hover {
+    background: #017e84;
+    color: white;
+}
+
+/* ✅ Settings Button */
+.btn-settings {
+    background: white;
+    color: #444;
+    border: 2px solid #444;
+}
+
+.btn-settings:hover {
+    background: #444;
+    color: white;
+}
+
+
+
+
+
+ /* ✅ Sidebar Defaults */
+/* ✅ Sidebar Defaults */
+#sidebar {
+    transform: translateX(0); /* ✅ Sidebar Open Initially */
+    transition: transform 0.3s ease-in-out;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: 260px;
+    background: #FFFFFF; /* ✅ Sidebar Background */
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* ✅ Subtle Shadow */
+}
+
+/* ✅ Sidebar Links */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* ✅ Sidebar Links - Hover Effect (Brand Color) */
+.sidebar-link:hover {
+    background: #017e84; /* ✅ Brand Hover Color */
+    color: white;
+}
+
+/* ✅ Sidebar Active Link */
+.sidebar-link.active {
+    background: #015c60; /* ✅ Slightly Darker Brand Color for Active */
+    color: white;
+}
+
+/* ✅ Hide Sidebar on Mobile by Default */
+@media (max-width: 768px) {
+    #sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+}
+
+/* ✅ Sidebar Open */
+.sidebar-open #sidebar {
+    transform: translateX(0);
+}
+
+/* ✅ Main Content Adjusts Dynamically */
+#mainContent {
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+/* ✅ Desktop Mode - Sidebar Open/Closed */
+@media (min-width: 769px) {
+    .sidebar-open #mainContent {
+        margin-left: 260px; /* ✅ Sidebar Open */
+        width: calc(100% - 260px);
+    }
+    .sidebar-closed #mainContent {
+        margin-left: 0; /* ✅ Sidebar Closed */
+        width: 100%;
+    }
+}
+
+/* ✅ Mobile Mode - Always Full Width */
+@media (max-width: 768px) {
+    #mainContent {
+        width: 100%;
+    }
+}
+
+/* ✅ Sidebar Toggle Button */
+#toggleSidebar {
+    position: absolute;
+    left: 260px; /* ✅ Default position when sidebar is open */
+    transition: left 0.3s ease-in-out;
+    background: #017e84; /* ✅ Brand Color */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 14px;
 }
 
-.entries-select {
-    border: 1px solid #D1D5DB;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 14px;
-    background: white;
-    transition: all 0.3s ease-in-out;
+/* ✅ Sidebar Toggle Button - Hover */
+#toggleSidebar:hover {
+    background: #015c60; /* ✅ Darker Brand Hover Color */
 }
 
-.entries-select:hover,
-.entries-select:focus {
-    border-color: #0E3EA8;
-    outline: none;
+/* ✅ Sidebar Closed - Move Toggle Button */
+.sidebar-closed #toggleSidebar {
+    left: 15px !important;
 }
 
-/* ✅ Search Bar */
-.search-input {
-    border: 1px solid #D1D5DB;
-    padding: 8px 12px;
-    padding-right: 35px;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease-in-out;
+/* ✅ Smooth Animation for Sidebar */
+.sidebar-transition {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
-
-.search-input:focus {
-    border-color: #0E3EA8;
-    outline: none;
-}
-
-/* ✅ Search Icon */
-.search-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6B7280;
-    font-size: 18px;
-}
-/* ✅ ID Card Container */
-.id-card {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border: 2px solid #0E3EA8;
-    max-width: 400px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-/* ✅ Profile Container */
-.profile-container {
-    max-width: 380px; /* Reduced Width */
-    margin: 40px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* ✅ ID Card */
-.id-card {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border: 2px solid #0E3EA8;
-    text-align: center;
-}
-
-/* ✅ ID Card Header */
-.id-card-header {
+/* ✅ Sidebar Buttons (Profile & Logout) */
+.sidebar-btn {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #0E3EA8;
     justify-content: center;
-}
-
-.id-card-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #0E3EA8;
-}
-
-.id-card-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0E3EA8;
-}
-
-.id-card-role {
-    font-size: 14px;
-    color: #6B7280;
-}
-
-/* ✅ ID Card Body */
-.id-card-body {
-    padding-top: 12px;
-    display: grid;
-    gap: 10px;
-}
-
-.id-card-info {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px dashed #E5E7EB;
-    padding-bottom: 6px;
-    font-size: 14px;
-}
-
-.id-card-info label {
-    font-weight: 600;
-    color: #374151;
-}
-
-.id-card-info p {
-    color: #6B7280;
-}
-
-/* ✅ Edit Profile Button */
-.id-card-btn {
+    gap: 6px;
     padding: 8px 14px;
     font-size: 14px;
     font-weight: 600;
     border-radius: 6px;
-    border: 1px solid transparent;
+    border: 1px solid gray;
     transition: all 0.3s ease-in-out;
+    color: #333;
+    text-decoration: none;
 }
 
-.id-card-btn.edit {
-    background: white;
-    color: #7C3AED;
-    border-color: #7C3AED;
+.sidebar-btn:hover {
+    background: #f4f4f5;
 }
 
-.id-card-btn.edit:hover {
-    background: #7C3AED;
-    color: white;
-}
-
-/* ✅ Responsive Design */
-@media (max-width: 768px) {
-    .profile-container {
-        max-width: 100%;
-    }
-}
-
-/* ✅ Profile Edit Container */
-.profile-edit-container {
-    max-width: 450px;
-    margin: 40px auto;
-    background: white;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* ✅ Tab Navigation */
-.tabs {
+/* ✅ Sidebar Links */
+.sidebar-link {
     display: flex;
-    border-bottom: 2px solid #E5E7EB;
-    margin-bottom: 20px;
-}
-
-.tab {
-    flex: 1;
-    text-align: center;
+    align-items: center;
+    justify-content: space-between;
     padding: 12px 16px;
     font-weight: 600;
-    cursor: pointer;
-    transition: color 0.3s ease-in-out, border-bottom 0.3s ease-in-out;
-}
-
-.tab:hover {
-    color: #0E3EA8;
-}
-
-.tab.active {
-    color: #0E3EA8;
-    border-bottom: 3px solid #0E3EA8;
-}
-
-/* ✅ Form Inputs */
-.form-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 4px;
-    display: block;
-}
-
-.form-input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #D1D5DB;
+    color: #333;
+    transition: all 0.3s ease-in-out;
     border-radius: 6px;
-    font-size: 14px;
-    transition: border 0.3s ease-in-out;
 }
 
-.form-input:focus {
-    border-color: #0E3EA8;
-    outline: none;
-}
-
-/* ✅ Primary Button */
-.primary-btn {
-    background: #0E3EA8;
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: #017e84; /* ✅ Brand Hover & Active Color */
     color: white;
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    text-align: center;
+}
+
+/* ✅ Submenu Styling */
+.submenu {
+    display: none;
+    margin-left: 12px;
+    border-left: 2px solid #cbd5e1;
+    padding-left: 12px;
+}
+
+.submenu-link {
     display: block;
-    transition: background 0.3s ease-in-out;
-}
-
-.primary-btn:hover {
-    background: #0C359A;
-}
-
-.full-width {
-    width: 100%;
-}
-
-/* ✅ Proper Spacing */
-.mt-5 {
-    margin-top: 20px;
-}
-
-/* ✅ Responsive Design */
-@media (max-width: 768px) {
-    .profile-edit-container {
-        max-width: 95%;
-        padding: 20px;
-    }
-}
-
-
-
-
-/* ✅ Smaller, clean input fields */
-.form-input {
-    width: 100%;
-    max-width: 350px;  /* ✅ Adjust width */
-    padding: 6px 10px; /* ✅ Reduce padding */
-    font-size: 14px;   /* ✅ Smaller font */
-    border: 1px solid #D1D5DB;
-    border-radius: 6px; /* ✅ Rounded shape */
-    transition: border 0.3s ease-in-out;
-}
-
-.form-input:focus {
-    border-color: #0E3EA8;
-    outline: none;
-}
-
-/* ✅ Form Labels */
-.form-label {
+    padding: 8px 14px;
     font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 4px;
-    display: block;
+    font-weight: 500;
+    color: #444;
+    transition: all 0.3s ease-in-out;
+    border-radius: 6px;
 }
 
-/* ✅ Username Availability Message */
-.text-green-500 { color: #22C55E; }
-.text-red-500 { color: #EF4444; }
-
-
-
-/* ✅ Custom Checkbox Styling */
-.custom-checkbox {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background-color: white;
-    border: 2px solid #017e84;
-    border-radius: 3px;
-    position: relative;
-    cursor: pointer;
-    outline: none; /* Removes default focus */
-    transition: all 0.2s ease-in-out;
+.submenu-link:hover {
+    background: #f4f4f5;
 }
 
-/* ✅ Hover Effect */
-.custom-checkbox:hover {
-    border-color: #015c60; /* Darker border on hover */
-    background-color: rgba(1, 126, 132, 0.1); /* Light background effect */
+/* ✅ Submenu Arrow Icon */
+.submenu-arrow {
+    transition: transform 0.3s ease-in-out;
 }
 
-/* ✅ Checked State */
-.custom-checkbox:checked {
-    background-color: #017e84;
-    border-color: #017e84;
-}
-
-/* ✅ Remove Blue Focus Outline on Hover/Click */
-.custom-checkbox:focus,
-.custom-checkbox:focus-visible {
-    outline: none !important;
-    box-shadow: 0 0 0 2px rgba(1, 126, 132, 0.3); /* Optional: Subtle brand-colored glow */
+.submenu-open .submenu-arrow {
+    transform: rotate(180deg);
 }

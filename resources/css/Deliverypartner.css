@@ -1,0 +1,276 @@
+/* =========================================
+   ✅ GENERAL TABLE STYLING
+========================================= */
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Roboto', sans-serif;
+}
+
+.table-custom th {
+    background-color: #017e84;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.table-custom td {
+    padding: 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table-custom .actions {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* =========================================
+   ✅ COURIER ID BRANDING COLORS
+========================================= */
+.courier-id {
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.courier-id.pathao { color: #E50914; }  /* Pathao: Red */
+.courier-id.steadfast { color: #27AE60; }  /* Steadfast: Green */
+.courier-id.redx { color: #C0392B; }  /* RedX: Dark Red */
+.courier-id.ecourier { color: #8E44AD; }  /* E-Courier: Purple */
+
+/* =========================================
+   ✅ COURIER ICON STYLING
+========================================= */
+.courier-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+/* =========================================
+   ✅ STATUS TAGS
+========================================= */
+.status-active {
+    border: 2px solid #2ecc71;
+    color: #2ecc71;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.status-inactive {
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* =========================================
+   ✅ BUTTON STYLING
+========================================= */
+.btn-api, .btn-settings {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-api {
+    background: white;
+    color: #017e84;
+    border: 2px solid #017e84;
+}
+
+.btn-api:hover {
+    background: #017e84;
+    color: white;
+}
+
+.btn-settings {
+    background: white;
+    color: #444;
+    border: 2px solid #444;
+}
+
+.btn-settings:hover {
+    background: #444;
+    color: white;
+}
+
+/* =========================================
+   ✅ ADD COURIER BUTTON STYLING
+========================================= */
+.btn-add-courier {
+    display: inline-flex;
+    align-items: center;
+    background-color: #017e84;
+    color: white;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+    border: 2px solid transparent;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-add-courier:hover {
+    background-color: #005f63;
+    border-color: #005f63;
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-courier:active {
+    background-color: #00484d;
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+/* =========================================
+   ✅ DROPDOWN MENU STYLING
+========================================= */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    z-index: 1000;
+    padding: 5px 0;
+}
+
+/* =========================================
+   ✅ LOG MESSAGE STYLES
+========================================= */
+.log-message {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.log-message.success {
+    background: #017e84;
+    color: white;
+}
+
+.log-message.error {
+    background: #FFCCCC;
+    color: #c0392b;
+}
+
+.log-message.info {
+    background: #f39c12;
+    color: white;
+}
+
+/* =========================================
+   ✅ MODAL STYLING (DEFAULT)
+========================================= */
+.modal-content {
+    width: 500px;
+    max-width: 90%;
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+/* =========================================
+   ✅ RESPONSIVE MODAL FOR MOBILE VIEW
+========================================= */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        max-width: 400px;
+        padding: 16px; /* Reduced padding */
+    }
+
+    .modal-body {
+        padding: 12px;
+    }
+
+    .modal-footer {
+        padding: 12px;
+    }
+
+    .btn-cancel, .btn-save {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+/* =========================================
+   ✅ GENERAL BUTTON STYLING
+========================================= */
+.btn-cancel, .btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 130px;
+}
+
+/* ✅ Cancel Button */
+.btn-cancel {
+    background-color: #FFE4E1;
+    color: #C0392B;
+    border: 2px solid transparent;
+    margin-right: auto;
+}
+
+.btn-cancel:hover {
+    background-color: #FADBD8;
+    border-color: #C0392B;
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ Save Button */
+.btn-save {
+    background-color: #017e84;
+    color: white;
+    border: 2px solid transparent;
+    margin-left: auto;
+}
+
+.btn-save:hover {
+    background-color: #005f63;
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+}

@@ -94,4 +94,15 @@ class Kernel extends HttpKernel
         // ✅ Custom Middleware for Business Role Scoping
         'scopeRoles' => ScopeRolesToBusiness::class,
     ];
+
+    protected function schedule(Schedule $schedule)
+{
+    $schedule->call(function () {
+        $businesses = PathaoApiCredential::all();
+        foreach ($businesses as $business) {
+            app(PathaoController::class)->refreshAccessToken($business->business_id);
+        }
+    })->daily(); // ✅ Runs daily to refresh tokens automatically for pathao
+}
+
 }

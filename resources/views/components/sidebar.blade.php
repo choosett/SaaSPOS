@@ -1,5 +1,5 @@
-        <!-- SIDEBAR CONTAINER -->
-        <div id="sidebar" class="w-64 bg-[#f4f4f5] border-r border-[#cbd5e1] shadow-md overflow-y-auto z-50 transition-all duration-300 ease-in-out md:translate-x-0 -translate-x-full">
+<!-- SIDEBAR CONTAINER -->
+<div id="sidebar" class="w-64 bg-[#f4f4f5] border-r border-[#cbd5e1] shadow-md overflow-y-auto z-50 transition-all duration-300 ease-in-out md:translate-x-0 -translate-x-full">
             
             <!-- USER INFO SECTION -->
             <div class="p-4 text-center border-b border-[#cbd5e1]">
@@ -46,10 +46,13 @@
 
                     ["name" => "Contacts", "icon" => "contacts", "submenu" => [
                         ["name" => "Suppliers", "link" => route('suppliers.index')], 
-                        ["name" => "Customers", "link" => "#"],
+                        ["name" => "Customers", "link" => route('customers.index')], 
                         ["name" => "Membership", "link" => "#"],
                         ["name" => "Import Contacts", "link" => "#"]
                     ]],
+
+                    ["name" => "Delivery Partner", "icon" => "local_shipping", "link" => route('delivery.index')],
+
                     ["name" => "Products", "icon" => "inventory_2", "submenu" => [
                         ["name" => "List Products", "link" => "#"],
                         ["name" => "Add Products", "link" => "#"],
@@ -134,4 +137,5 @@
             @endforeach
         </ul>
     </nav>
+
 </div>

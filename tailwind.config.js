@@ -22,6 +22,10 @@ export default {
                 inter: ['Inter', 'sans-serif'],  // ✅ Add Inter for table headers
                 roboto: ['Roboto', 'sans-serif'], // ✅ Add Roboto for table data
             },
+            colors: {
+                'blue-900': '#017e84', // ✅ Override Tailwind's default blue-900
+                'brand': '#017e84', // ✅ Define a custom brand color
+            },
         },
     },
 

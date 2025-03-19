@@ -1,123 +1,146 @@
-<!-- ✅ Add Supplier Modal -->
-<div x-data="{ open: false }" x-init="fetchUsers()">
-    <!-- ✅ Add Supplier Button -->
-    <button @click="open = true"
-        class="bg-[#017e84] hover:bg-[#015a5e] text-white px-4 py-2 rounded-md flex items-center gap-2 shadow-md transition">
-        <span class="material-icons">add</span> @lang('Add Supplier')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Supplier</title>
+
+    <!-- ✅ Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ✅ FontAwesome Free Icons (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- ✅ Alpine.js (For Modal & Dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; }
+
+        /* Compact Input Box */
+        .input-box {
+            height: 42px;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* Input Focus */
+        .input-box:focus {
+            border-color: #017e84;
+            background-color: white;
+        }
+
+        /* Modal */
+        .modal {
+            width: 100%;
+            max-width: 40rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Label */
+        .label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center p-6" x-data="{ open: false }">
+
+    <!-- ✅ Open Modal Button -->
+    <button @click="open = true" class="flex items-center gap-2 bg-[#017e84] text-white px-4 py-2 rounded-md">
+        <i class="fas fa-user-plus"></i> Add Supplier
     </button>
 
     <!-- ✅ Modal Overlay -->
-    <div x-show="open" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    <div x-show="open" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
         x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
         @click.away="open = false">
-
-        <!-- ✅ Modal Content -->
-        <div class="bg-white shadow-lg p-6 relative transition-all duration-300 ease-in-out rounded-lg"
-             :class="{ 'max-w-3xl w-full': window.innerWidth > 768, 
-                       'max-w-s w-[85%]': window.innerWidth <= 768 }"
-             style="max-height: 90vh; overflow-y: auto;">
-
-            <!-- ✅ Close Button -->
-            <button @click="open = false" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
-                <span class="material-icons">close</span>
+        
+        <div class="modal p-6 relative" x-show="open" x-transition>
+            <button @click="open = false" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-lg">
+                <i class="fas fa-times"></i>
             </button>
-
-            <!-- ✅ Modal Header -->
-            <h2 class="text-lg font-semibold text-[#017e84] mb-4">@lang('Add Supplier')</h2>
-
-            <!-- ✅ Supplier Form -->
-            <form action="{{ route('suppliers.store') }}" method="POST">
-                @csrf <!-- ✅ CSRF Token -->
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- ✅ Left Section -->
+            
+            <h3 class="text-lg font-semibold text-gray-800">Create Supplier</h3>
+            
+            <form action="{{ route('suppliers.store') }}" method="POST" class="space-y-4 mt-4">
+                @csrf
+                
+                <!-- 🔹 Contact ID & Name -->
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <!-- Contact ID -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Contact ID')</label>
-                            <input type="text" name="contact_id"
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]"
-                                placeholder="@lang('Leave empty to autogenerate')">
-                        </div>
-
-                        <!-- Name -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Name') *</label>
-                            <input type="text" name="supplier_name" required
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]">
-                        </div>
-
-                        <!-- Mobile -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Mobile') *</label>
-                            <input type="text" name="phone" required
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]">
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Email')</label>
-                            <input type="email" name="email"
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]">
-                        </div>
+                        <label class="label">Contact ID</label>
+                        <input type="text" name="contact_id" class="input-box w-full" placeholder="Leave empty to autogenerate">
                     </div>
-
-                    <!-- ✅ Right Section -->
                     <div>
-                        <!-- Assigned To -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Assigned to') *</label>
-                            <select name="assigned_to" id="assignedToForm" 
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]" required>
-                                <option value="" disabled>@lang('Select a user')</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">
-                                        {{ $user->username }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Opening Balance -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Opening Balance')</label>
-                            <input type="number" name="opening_balance" step="0.01"
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]">
-                        </div>
-
-                        <!-- Advance Balance -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Advance Balance')</label>
-                            <input type="number" name="advance_balance" step="0.01"
-                                class="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:ring-[#017e84]">
-                        </div>
-
-                        <!-- Address -->
-                        <div class="mb-3">
-                            <label class="text-sm font-semibold text-gray-800">@lang('Address')</label>
-                            <textarea name="address" rows="2"
-                                class="border border-gray-300 rounded-md px-3 text-sm w-full focus:ring-[#017e84]"></textarea>
-                        </div>
+                        <label class="label">Supplier Name *</label>
+                        <input type="text" name="supplier_name" class="input-box w-full" required>
                     </div>
                 </div>
-
-                <!-- ✅ Buttons -->
-                <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" @click="open = false"
-                        class="border border-gray-300 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-100 transition">
-                        @lang('Cancel')
+                
+                <!-- 🔹 Mobile & Email -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="label">Mobile *</label>
+                        <input type="text" name="phone" class="input-box w-full" required>
+                    </div>
+                    <div>
+                        <label class="label">Email (Optional)</label>
+                        <input type="email" name="email" class="input-box w-full">
+                    </div>
+                </div>
+                
+                <!-- 🔹 Assigned To (Dropdown with Laravel Data) -->
+                <div>
+                    <label class="label">Assigned To *</label>
+                    <select name="assigned_to" class="input-box" required>
+                        <option disabled selected>Select a User</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->username }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- 🔹 Opening Balance & Advance Balance -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="label">Opening Balance</label>
+                        <input type="number" name="opening_balance" step="0.01" class="input-box w-full">
+                    </div>
+                    <div>
+                        <label class="label">Advance Balance</label>
+                        <input type="number" name="advance_balance" step="0.01" class="input-box w-full">
+                    </div>
+                </div>
+                
+                <!-- 🔹 Address -->
+                <div>
+                    <label class="label">Address</label>
+                    <textarea name="address" class="input-box w-full" placeholder="Supplier Address"></textarea>
+                </div>
+                
+                <!-- 🔹 Buttons -->
+                <div class="flex justify-between mt-4 border-t pt-4">
+                    <button type="button" @click="open = false" class="text-gray-700 flex items-center gap-2">
+                        <i class="fas fa-times"></i> Cancel
                     </button>
-                    <button type="submit"
-                        class="bg-[#017e84] hover:bg-[#015a5e] text-white px-3 py-1 rounded-md text-sm shadow-md transition">
-                        @lang('Save Supplier')
+                    <button type="submit" class="flex items-center gap-2 bg-[#017e84] text-white px-4 py-2 rounded-md">
+                        <i class="fas fa-save"></i> Save Supplier
                     </button>
                 </div>
+                
             </form>
         </div>
     </div>
-</div>
+</body>
+</html>

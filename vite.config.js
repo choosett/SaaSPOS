@@ -8,9 +8,17 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/css/auth.css',
-                'resources/js/auth.js'
+                'resources/js/auth.js',
+                'resources/css/Deliverypartner.css', // ✅ Added Deliverypartner.css
+                
+                // ✅ Delivery Partner JS Files (Pathao, E-Courier, RedX, Steadfast)
+                'resources/js/Modules/Deliverypartner/Index.js',
+                'resources/js/Modules/Deliverypartner/Pathao.js',
+                'resources/js/Modules/Deliverypartner/ECourier.js',
+                'resources/js/Modules/Deliverypartner/RedX.js',
+                'resources/js/Modules/Deliverypartner/Steadfast.js',
             ],
-            refresh: true,  // Auto-reload on changes
+            refresh: true,  // Auto-reload on file changes
         }),
     ],
     server: {

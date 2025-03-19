@@ -2,12 +2,15 @@
 
 
 <!-- ✅ Header: Customer List (Left) & Add Customer Button (Right) -->
-    <div class="flex justify-between items-center mb-3">
-        <h2 class="text-lg font-semibold text-gray-800">@lang('Customer List')</h2>
-        <button class="bg-[#017e84] text-white px-4 py-2 rounded-md text-sm shadow-md flex items-center gap-2">
-            ➕ @lang('Add Customer')
-        </button>
-    </div>
+<div class="flex justify-between items-center mb-3">
+    <h2 class="text-lg font-semibold text-gray-800">@lang('Customer List')</h2>
+    <button onclick="openModal()" class="bg-[#017e84] text-white px-4 py-2 rounded-md text-sm shadow-md flex items-center gap-2">
+        ➕ @lang('Add Customer')
+    </button>
+</div>
+
+<!-- Include the Add Customer Modal -->
+@include('customers.partials._add-customer')
 
     <!-- ✅ Bottom Controls & Filters -->
     <div class="flex justify-between items-center mb-3">

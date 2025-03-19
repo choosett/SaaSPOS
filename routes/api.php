@@ -4,23 +4,56 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiAuthController;
 use App\Http\Controllers\Api\CourierCheckController;
+use App\Http\Controllers\LocationSearchController;
+use App\Http\Controllers\DeliveryPartnerController\PathaoController;
+use App\Models\User;
+use App\Models\PathaoLocation;
+use App\Http\Controllers\DeliveryPartnerController\RedxController;
+use App\Http\Controllers\DeliveryPartnerController\SteadfastController;
+use App\Http\Controllers\DeliveryPartnerController\ECourierController;
 
 
+Route::post('/pathao/store-credentials', [PathaoController::class, 'verifyAndStoreCredentials']);
+Route::post('/pathao/refresh-token', [PathaoController::class, 'refreshAccessToken']);
+
+
+
+
+
+// ✅ Ensure this block is inside routes/api.php
+
+Route::post('/ecourier/check-and-store-credentials', [ECourierController::class, 'checkAndStoreCredentials']);
+
+
+
+// ✅ RedX API Routes
+Route::get('/redx/verify-access-token', [RedxController::class, 'verifyAccessToken']);
+Route::post('/redx/store-credentials', [RedxController::class, 'storeCredentials']);
+
+// ✅ Steadfast API Routes
+Route::get('/steadfast/check-balance', [SteadfastController::class, 'checkBalance']); 
+Route::post('/steadfast/store-credentials', [SteadfastController::class, 'storeCredentials']); 
+
+
+
+
+
+
+
+// 🔹 Location Match Route
+Route::get('/location/match', [LocationSearchController::class, 'matchLocation']);
+
+// 🔹 Courier Check
 Route::post('/courier-check', [CourierCheckController::class, 'checkCourier']);
 
-
+// 🔹 Public API Documentation
 /**
  * @OA\Info(
  *      title="Laravel API Documentation",
  *      version="1.0.0",
  *      description="API documentation for the Laravel authentication system using Sanctum.",
- *      @OA\Contact(
- *          email="support@example.com"
- *      ),
- *      @OA\License(
- *          name="Apache 2.0",
- *          url="http://www.apache.org/licenses/LICENSE-2.0.html"
- *      )
+ *      @OA\Contact(email="support@example.com"),
+ *      @OA\License(name="Apache 2.0", url="http://www.apache.org/licenses/LICENSE-2.0.html")
  * )
  *
  * @OA\Server(
@@ -59,20 +92,10 @@ Route::post('/courier-check', [CourierCheckController::class, 'checkCourier']);
  */
 Route::post('/login', [ApiAuthController::class, 'login']);
 
-Route::get('/test', function () {
-    return response()->json([
-        'message' => 'API is working!',
-        'status' => 200
-    ]);
-});
 
-Route::get('/version', function () {
-    return response()->json([
-        'framework' => app()->version(),
-    ]);
-});
+Route::get('/version', fn() => response()->json(['framework' => app()->version()]));
 
-// 🔹 Protected API routes (Require authentication)
+// 🔹 Protected API Routes (Require authentication)
 /**
  * @OA\Get(
  *     path="/api/user",
@@ -86,15 +109,20 @@ Route::get('/version', function () {
  * )
  */
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [ApiAuthController::class, 'user']);  // ✅ Keeps only one /user route
+    Route::get('/user', [ApiAuthController::class, 'user']);  
     Route::post('/logout', [ApiAuthController::class, 'logout']);
+    
+
 });
+
+
+
 
 // 🔹 Fallback Route (Handles 404 for unknown API endpoints)
-Route::fallback(function () {
-    return response()->json(['message' => 'API route not found'], 404);
-});
+Route::fallback(fn() => response()->json(['message' => 'API route not found'], 404));
 
+// 🔹 Get All Users (Debugging)
 Route::get('/users', function () {
     return response()->json(User::select('id', 'username')->get());
 });
+
