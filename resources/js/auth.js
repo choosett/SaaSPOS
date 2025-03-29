@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Auth Page Loaded");
 
-    // Auto-focus first input field
+    // ✅ Auto-focus first input field (only if it exists)
     const firstInput = document.querySelector(".auth-input");
     if (firstInput) firstInput.focus();
 
-    // Password Show/Hide Functionality
+    // ✅ Password Show/Hide Functionality
     function setupPasswordToggle() {
         document.querySelectorAll(".password-wrapper").forEach(wrapper => {
             const passwordInput = wrapper.querySelector(".auth-input[type='password']");
@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    setupPasswordToggle(); // Call the function to apply functionality
+    setupPasswordToggle(); // ✅ Call function only when elements exist
 
-    // Multi-step form navigation
+    // ✅ Multi-step form navigation
     const steps = document.querySelectorAll(".step-content");
     const stepIndicators = document.querySelectorAll(".step-indicator");
     const nextButtons = document.querySelectorAll(".next-btn");
@@ -40,10 +40,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         steps.forEach((s, index) => {
             s.classList.toggle("hidden", index !== step);
-            stepIndicators[index].classList.toggle("active", index === step);
+            if (stepIndicators[index]) {
+                stepIndicators[index].classList.toggle("active", index === step);
+            }
         });
 
-        document.querySelector(".auth-container").scrollIntoView({ behavior: "smooth" });
+        document.querySelector(".auth-container")?.scrollIntoView({ behavior: "smooth" });
 
         currentStep = step;
     }
@@ -68,9 +70,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function validateStep(step) {
         let valid = true;
-        const requiredFields = steps[step].querySelectorAll("[required]");
+        const requiredFields = steps[step]?.querySelectorAll("[required]");
 
-        requiredFields.forEach((field) => {
+        requiredFields?.forEach((field) => {
             if (!field.value.trim()) {
                 field.classList.add("border-red-500", "focus:ring-red-500");
                 valid = false;
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return valid;
     }
 
-    form.addEventListener("submit", function (event) {
+    form?.addEventListener("submit", function (event) {
         if (!validateStep(currentStep)) {
             event.preventDefault();
         }
@@ -94,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     showStep(currentStep);
 
+    // ✅ Enable Auto Date Picker Only if Input Fields Exist
     function enableAutoDatePicker() {
         const dateInputs = document.querySelectorAll('input[type="date"], input[type="month"]');
 
@@ -108,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     enableAutoDatePicker();
 
-    // Dark Mode / Day Mode Toggle
+    // ✅ Dark Mode / Day Mode Toggle (FIXED)
     const modeToggle = document.getElementById("mode-toggle");
     const body = document.body;
 
@@ -119,9 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
     }
 
+    // ✅ Check if modeToggle exists before adding event listener
     if (modeToggle) {
         modeToggle.addEventListener("click", toggleMode);
 
+        // ✅ Set theme based on saved preference
         if (localStorage.getItem("theme") === "light") {
             body.classList.remove("dark");
             body.classList.add("light");

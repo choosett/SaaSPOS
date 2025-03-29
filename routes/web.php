@@ -13,39 +13,19 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Contacts\SupplierController;
+use App\Http\Controllers\Api\CourierCheckController;
+use App\Http\Controllers\Contacts\CustomerController;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Http\Controllers\Api\CourierCheckController; // ✅ Correct Namespace!
-use Illuminate\Support\Facades\Http;
-use App\Http\Controllers\Contacts\CustomerController;
 
-
-Route::prefix('customers')->group(function () {
-    Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
-    Route::get('/create', [CustomerController::class, 'create'])->name('customers.create'); // Add Customer Page
-    Route::post('/store', [CustomerController::class, 'store'])->name('customers.store');
-    Route::get('/edit/{customer}', [CustomerController::class, 'edit'])->name('customers.edit');
-    Route::put('/update/{customer}', [CustomerController::class, 'update'])->name('customers.update');
-    Route::delete('/delete/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
-});
-
-
-// 🚀 Show input form for courier check
-Route::get('/courier-check', function () {
-    return view('courier-check-form'); 
-});
-
-// 🚀 Process input and fetch results from API
-Route::post('/courier-check', [CourierCheckController::class, 'showCourierCheck']);
-
-
-// ✅ Home Page
-Route::get('/', fn() => view('welcome'));
+// ✅ Home Route
+Route::get('/', fn() => view('welcome'))->name('home');
 
 // ✅ Authentication Routes (Login & Register)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+    
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
 });
@@ -53,11 +33,11 @@ Route::middleware('guest')->group(function () {
 // ✅ Protected Routes (Require Authentication)
 Route::middleware(['auth'])->group(function () {
 
-    // ✅ Logout
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
-    // ✅ Dashboard
+    // ✅ Dashboard (Ensure user has permission to view)
     Route::middleware(['permission:dashboard.view'])->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // ✅ Logout Route
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     // ✅ Profile Routes
     Route::prefix('profile')->group(function () {
@@ -65,6 +45,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/edit', fn() => view('profile.profile-edit'))->name('profile.edit');
         Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+    // ✅ Customer Management
+    Route::prefix('customers')->name('customers.')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('index');
+        Route::get('/create', [CustomerController::class, 'create'])->name('create');
+        Route::post('/store', [CustomerController::class, 'store'])->name('store');
+        Route::get('/edit/{customer}', [CustomerController::class, 'edit'])->name('edit');
+        Route::put('/update/{customer}', [CustomerController::class, 'update'])->name('update');
+        Route::delete('/delete/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
     });
 
     // ✅ User Management
@@ -75,10 +65,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:users.edit')->name('edit');
         Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:users.edit')->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:users.delete')->name('destroy');
-        Route::post('/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('toggleStatus');
-        Route::get('/active-users', [UserController::class, 'getActiveUsers'])->name('getActiveUsers');
-        Route::get('/check-username', [UserController::class, 'checkUsername'])->name('checkUsername');
-        Route::get('/check-email', [UserController::class, 'checkEmail'])->name('checkEmail');
     });
 
     // ✅ Assign Permissions to Users
@@ -108,20 +94,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [SupplierController::class, 'index'])->name('index');
         Route::get('/create', [SupplierController::class, 'create'])->name('create');
         Route::post('/store', [SupplierController::class, 'store'])->name('store');
-
-        Route::get('/{id}', [SupplierController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [SupplierController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [SupplierController::class, 'update'])->name('update');
-        Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('destroy');
-        Route::post('/{id}/toggle-status', [SupplierController::class, 'toggleStatus'])->name('toggleStatus');
-        Route::get('/suppliers/filter-by-user', [SupplierController::class, 'filterByUser'])->name('suppliers.filter');
-        Route::get('/suppliers/{id}', [SupplierController::class, 'show'])->name('suppliers.show');
-
+        Route::get('/edit/{id}', [SupplierController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [SupplierController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [SupplierController::class, 'destroy'])->name('destroy');
     });
 
-    // ✅ Update Activity
+    // ✅ Update User Activity
     Route::post('/update-activity', [AuthenticatedSessionController::class, 'updateActivity'])->name('update.activity');
-
 });
 
 // ✅ API: Get Users by Business ID
@@ -131,32 +110,15 @@ Route::get('/api/get-users', function (Request $request) {
     return response()->json(['users' => $users]);
 });
 
+// ✅ Include Authentication Routes
 require __DIR__.'/auth.php';
 
-
-Route::prefix('delivery-partner')->group(function () {
-    Route::get('/', function () {
-        return view('DeliveryPartner.index');
-    })->name('delivery.index');
-
-    Route::get('/api/pathao', function () {
-        return view('DeliveryPartner.partials.api.pathao_api');
-    })->name('delivery.pathao_api');
-
-    Route::get('/api/steadfast', function () {
-        return view('DeliveryPartner.partials.api.steadfast_api');
-    })->name('delivery.steadfast_api');
-
-    Route::get('/api/redx', function () {
-        return view('DeliveryPartner.partials.api.redx_api');
-    })->name('delivery.redx_api');
-
-    Route::get('/api/e-courier', function () {
-        return view('DeliveryPartner.partials.api.e_courier_api');
-    })->name('delivery.e_courier_api');
-
-    Route::get('/add-courier', function () {
-        return view('DeliveryPartner.partials.add_courier');
-    })->name('delivery.add_courier');
+// ✅ Delivery Partner Routes
+Route::prefix('delivery-partner')->name('delivery.')->group(function () {
+    Route::get('/', fn() => view('DeliveryPartner.index'))->name('index');
+    Route::get('/api/pathao', fn() => view('DeliveryPartner.partials.api.pathao_api'))->name('pathao_api');
+    Route::get('/api/steadfast', fn() => view('DeliveryPartner.partials.api.steadfast_api'))->name('steadfast_api');
+    Route::get('/api/redx', fn() => view('DeliveryPartner.partials.api.redx_api'))->name('redx_api');
+    Route::get('/api/e-courier', fn() => view('DeliveryPartner.partials.api.e_courier_api'))->name('e_courier_api');
+    Route::get('/add-courier', fn() => view('DeliveryPartner.partials.add_courier'))->name('add_courier');
 });
-

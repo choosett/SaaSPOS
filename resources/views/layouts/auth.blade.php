@@ -8,7 +8,7 @@
     <!-- Load Auth-specific CSS -->
     @vite(['resources/css/auth.css', 'resources/js/auth.js'])
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 {{ request()->routeIs('login') ? 'login-page' : '' }}">
+<body class="flex items-center justify-center min-h-screen bg-gray-100 {{ request()->routeIs('login') ? 'login-page' : '' }}">
     <div class="auth-container">
         @yield('content')
     </div>

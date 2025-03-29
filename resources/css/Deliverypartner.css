@@ -11,7 +11,6 @@
     background-color: #017e84;
     color: white;
     padding: 10px;
-    text-align: left;
     font-size: 13px;
 }
 
@@ -25,6 +24,12 @@
     display: flex;
     justify-content: center;
     gap: 6px;
+}
+
+/* ✅ Scrollable Table for Mobile */
+.overflow-x-auto {
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 /* =========================================
@@ -75,71 +80,105 @@
 /* =========================================
    ✅ BUTTON STYLING
 ========================================= */
-.btn-api, .btn-settings {
+.btn {
+    border: 2px solid #017e84;
+    color: #017e84;
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
 }
 
-.btn-api {
-    background: white;
-    color: #017e84;
-    border: 2px solid #017e84;
-}
-
-.btn-api:hover {
-    background: #017e84;
+.btn:hover {
+    background-color: #017e84;
     color: white;
 }
 
-.btn-settings {
-    background: white;
-    color: #444;
-    border: 2px solid #444;
+.btn-delete {
+    border: 2px solid #e63946;
+    color: #e63946;
 }
 
-.btn-settings:hover {
-    background: #444;
+.btn-delete:hover {
+    background-color: #e63946;
     color: white;
+}
+
+/* =========================================
+   ✅ TOGGLE SWITCH (Fixed & Centered)
+========================================= */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #017e84;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
 }
 
 /* =========================================
    ✅ ADD COURIER BUTTON STYLING
 ========================================= */
 .btn-add-courier {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    background-color: #017e84;
+    gap: 10px;
+    background-color: #196b71;
     color: white;
     font-weight: 600;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease-in-out;
-    text-decoration: none;
-    border: 2px solid transparent;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s;
 }
 
 .btn-add-courier:hover {
-    background-color: #005f63;
-    border-color: #005f63;
+    background-color: #14585c;
     transform: translateY(-2px);
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-add-courier:active {
-    background-color: #00484d;
-    box-shadow: none;
-    transform: translateY(0);
 }
 
 /* =========================================
-   ✅ DROPDOWN MENU STYLING
+   ✅ DROPDOWN MENU STYLING (Fixed)
 ========================================= */
 .dropdown-menu {
     position: absolute;
@@ -149,9 +188,35 @@
     border: 1px solid #ddd;
     border-radius: 6px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    min-width: 200px;
+    min-width: 250px;
     z-index: 1000;
-    padding: 5px 0;
+    padding: 12px 0;
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-menu li {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.dropdown-menu li:hover {
+    background-color: #017e84;
+    color: white;
+}
+
+.dropdown-menu img, .dropdown-menu i {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
 }
 
 /* =========================================
@@ -210,7 +275,7 @@
     .modal-content {
         width: 90%;
         max-width: 400px;
-        padding: 16px; /* Reduced padding */
+        padding: 16px;
     }
 
     .modal-body {
@@ -250,27 +315,11 @@
 .btn-cancel {
     background-color: #FFE4E1;
     color: #C0392B;
-    border: 2px solid transparent;
     margin-right: auto;
 }
 
-.btn-cancel:hover {
-    background-color: #FADBD8;
-    border-color: #C0392B;
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-/* ✅ Save Button */
 .btn-save {
     background-color: #017e84;
     color: white;
-    border: 2px solid transparent;
     margin-left: auto;
-}
-
-.btn-save:hover {
-    background-color: #005f63;
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
 }

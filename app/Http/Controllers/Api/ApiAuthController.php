@@ -5,22 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * @OA\Info(
  *      title="Laravel API Documentation",
  *      version="1.0.0",
  *      description="API documentation for the Laravel authentication system using Sanctum.",
- *      @OA\Contact(
- *          email="support@example.com"
- *      ),
- *      @OA\License(
- *          name="Apache 2.0",
- *          url="http://www.apache.org/licenses/LICENSE-2.0.html"
- *      )
+ *      @OA\Contact(email="support@example.com"),
+ *      @OA\License(name="Apache 2.0", url="http://www.apache.org/licenses/LICENSE-2.0.html")
  * )
  *
  * @OA\Server(
@@ -62,26 +59,42 @@ class ApiAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'identifier' => 'required',
-            'password' => 'required',
+            'identifier' => 'required|string',
+            'password' => 'required|string|min:6',
         ]);
 
-        $user = User::where('email', $request->identifier)
-                    ->orWhere('username', $request->identifier)
-                    ->first();
+        $field = filter_var($request->identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $user = User::where($field, $request->identifier)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
+            Log::warning("❌ Login Failed for identifier: " . $request->identifier);
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        // ✅ Store user ID in session
+        Auth::login($user, true);
+        session(['user_id' => $user->id]);
+        session()->regenerate();
+
+        // ✅ Ensure max 3 active tokens per user
         if ($user->tokens()->count() >= 3) {
             $user->tokens()->oldest()->first()->delete();
         }
-        
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // ✅ Update session table with user ID
+        DB::table('sessions')
+            ->where('id', session()->getId())
+            ->update(['user_id' => $user->id]);
+
+        Log::info("✅ Login Success - User ID: {$user->id}");
+
         return response()->json([
+            'success' => true,
             'token' => $token,
+            'user' => $user,
             'message' => 'Login successful',
         ], 200);
     }
@@ -94,15 +107,6 @@ class ApiAuthController extends Controller
      *     operationId="logoutUser",
      *     tags={"Authentication"},
      *     security={{ "bearerAuth": {} }},
-     *     @OA\Header(
-     *         header="Authorization",
-     *         description="Bearer {token}",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="string",
-     *             example="Bearer your_token_here"
-     *         )
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Logged out successfully",
@@ -123,7 +127,16 @@ class ApiAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = Auth::user();
+
+        if ($user) {
+            Log::info("🔴 Logging Out - User ID: {$user->id}");
+            $user->tokens()->delete();
+            Auth::logout();
+        }
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'Logged out successfully',
@@ -138,15 +151,6 @@ class ApiAuthController extends Controller
      *     operationId="getAuthenticatedUser",
      *     tags={"Authentication"},
      *     security={{ "bearerAuth": {} }},
-     *     @OA\Header(
-     *         header="Authorization",
-     *         description="Bearer {token}",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="string",
-     *             example="Bearer your_token_here"
-     *         )
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Authenticated user details",

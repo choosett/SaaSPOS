@@ -30,6 +30,8 @@ use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 // ✅ Custom Middleware
 use App\Http\Middleware\ScopeRolesToBusiness;
 use App\Http\Middleware\UpdateUserActivity;
+use App\Http\Middleware\StoreUserIdInSession; // ✅ Ensure user_id is stored in session
+use Illuminate\Console\Scheduling\Schedule; // ✅ Fixed missing import
 
 class Kernel extends HttpKernel
 {
@@ -42,7 +44,8 @@ class Kernel extends HttpKernel
         HandleCors::class,
         EncryptCookies::class,
         AddQueuedCookiesToResponse::class,
-        StartSession::class,
+        StartSession::class, // ✅ Ensures Laravel session is started globally
+        \Illuminate\Session\Middleware\AuthenticateSession::class, // ✅ Ensures session-based authentication
         ShareErrorsFromSession::class,
         ValidateCsrfToken::class,
         HandlePrecognitiveRequests::class,
@@ -58,11 +61,12 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            ValidateCsrfToken::class,
-            HandlePrecognitiveRequests::class,
-            SubstituteBindings::class,
+            StoreUserIdInSession::class, // ✅ Ensure user_id is stored in session
+            \Illuminate\Session\Middleware\AuthenticateSession::class, // ✅ Ensure persistent authentication
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
             UpdateUserActivity::class, // ✅ Auto-update user activity
         ],
 
@@ -94,15 +98,4 @@ class Kernel extends HttpKernel
         // ✅ Custom Middleware for Business Role Scoping
         'scopeRoles' => ScopeRolesToBusiness::class,
     ];
-
-    protected function schedule(Schedule $schedule)
-{
-    $schedule->call(function () {
-        $businesses = PathaoApiCredential::all();
-        foreach ($businesses as $business) {
-            app(PathaoController::class)->refreshAccessToken($business->business_id);
-        }
-    })->daily(); // ✅ Runs daily to refresh tokens automatically for pathao
-}
-
 }

@@ -1,4 +1,11 @@
-import { showMessage, enableOutsideClickClose, enableModalCloseButtons, sendApiRequest, closeModal, toggleVisibility } from "./Index.js";
+import { 
+    showMessage, 
+    enableOutsideClickClose, 
+    enableModalCloseButtons, 
+    sendApiRequest, 
+    closeModal, 
+    toggleVisibility 
+} from "./Index.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     const saveButton = document.getElementById("saveECourierApi");
@@ -29,19 +36,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            sendApiRequest("/api/ecourier/check-and-store-credentials",
+            sendApiRequest(
+                "/api/ecourier/check-and-store-credentials", // ✅ Fixed API endpoint
                 { business_id: businessId, user_id: userId, api_key: apiKey, api_secret: apiSecret },
                 "ecourierApiMessage",
-                () => setTimeout(() => closeModal("eCourierApiModal"), 1500)
+                () => setTimeout(() => closeModal("ecourierApiModal"), 1500) // ✅ Fixed Modal ID
             );
         });
     }
 
     // ✅ Enable Modal Close Buttons (Cancel & Close Icon)
-    enableModalCloseButtons("eCourierApiModal", "closeECourierModal", "cancelECourierApi");
+    enableModalCloseButtons("ecourierApiModal", "closeECourierModal", "cancelECourierApi");
 
     // ✅ Enable Outside Click to Close
-    enableOutsideClickClose("eCourierApiModal");
+    enableOutsideClickClose("ecourierApiModal");
 
     // ✅ Enable Password Toggle Visibility for all eye icons
     if (eyeIcons.length > 0) {

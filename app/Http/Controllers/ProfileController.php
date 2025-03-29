@@ -2,65 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    // ✅ View Profile
-    public function show()
+    /**
+     * Display the user's profile form.
+     */
+    public function edit(Request $request): View
     {
-        return view('profile', ['user' => Auth::user()]);
-    }
-
-    // ✅ Edit Profile
-    public function edit()
-    {
-        return view('profile-edit', ['user' => Auth::user()]);
-    }
-
-    // ✅ Update Profile
-    public function update(Request $request)
-    {
-        $user = Auth::user();
-
-        // Validate request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        return view('profile.edit', [
+            'user' => $request->user(),
         ]);
+    }
 
-        // Handle Avatar Upload
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::delete($user->avatar);
-            }
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $avatarPath;
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
         }
 
-        // Update user details
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'avatar' => $user->avatar ?? null,
-        ]);
+        $request->user()->save();
 
-        return redirect()->route('profile.show')->with('success', 'Profile updated successfully.');
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    // ✅ Delete Profile
-    public function destroy()
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
     {
-        $user = Auth::user();
-        if ($user->avatar) {
-            Storage::delete($user->avatar);
-        }
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        Auth::logout();
+
         $user->delete();
 
-        return redirect('/')->with('success', 'Profile deleted successfully.');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
     }
 }

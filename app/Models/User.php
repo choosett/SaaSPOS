@@ -45,7 +45,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
         'last_activity' => 'datetime',
     ];
 
@@ -55,5 +54,13 @@ class User extends Authenticatable
     public function getRouteKeyName()
     {
         return 'id';
+    }
+
+    /**
+     * Auto hash passwords when setting them.
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
     }
 }

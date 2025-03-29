@@ -2,51 +2,63 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Api\ApiAuthController;
 use App\Http\Controllers\Api\CourierCheckController;
 use App\Http\Controllers\LocationSearchController;
 use App\Http\Controllers\DeliveryPartnerController\PathaoController;
-use App\Models\User;
-use App\Models\PathaoLocation;
 use App\Http\Controllers\DeliveryPartnerController\RedxController;
 use App\Http\Controllers\DeliveryPartnerController\SteadfastController;
 use App\Http\Controllers\DeliveryPartnerController\ECourierController;
+use App\Models\User;
 
+// ✅ Authentication Routes
+Route::post('/login', [ApiAuthController::class, 'login'])->name('api.login');
+Route::middleware('auth:sanctum')->post('/logout', [ApiAuthController::class, 'logout']);
 
-Route::post('/pathao/store-credentials', [PathaoController::class, 'verifyAndStoreCredentials']);
-Route::post('/pathao/refresh-token', [PathaoController::class, 'refreshAccessToken']);
+// ✅ Protected User Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [ApiAuthController::class, 'user'])->name('api.user');
+    Route::post('/update-activity', [ApiAuthController::class, 'updateActivity']);
+});
 
+// ✅ Delivery Partner API Routes
+Route::prefix('delivery-partner')->group(function () {
+    Route::prefix('pathao')->group(function () {
+        Route::post('/store-credentials', [PathaoController::class, 'verifyAndStoreCredentials']);
+        Route::post('/refresh-token', [PathaoController::class, 'refreshAccessToken']);
+    });
 
+    Route::prefix('redx')->group(function () {
+        Route::get('/verify-access-token', [RedxController::class, 'verifyAccessToken']);
+        Route::post('/store-credentials', [RedxController::class, 'storeCredentials']);
+    });
 
+    Route::prefix('steadfast')->group(function () {
+        Route::get('/check-balance', [SteadfastController::class, 'checkBalance']);
+        Route::post('/store-credentials', [SteadfastController::class, 'storeCredentials']);
+    });
 
+    Route::prefix('ecourier')->group(function () {
+        Route::middleware('auth:sanctum')->post('/check-and-store-credentials', [ECourierController::class, 'checkAndStoreCredentials']);
+    });
+});
 
-// ✅ Ensure this block is inside routes/api.php
-
-Route::post('/ecourier/check-and-store-credentials', [ECourierController::class, 'checkAndStoreCredentials']);
-
-
-
-// ✅ RedX API Routes
-Route::get('/redx/verify-access-token', [RedxController::class, 'verifyAccessToken']);
-Route::post('/redx/store-credentials', [RedxController::class, 'storeCredentials']);
-
-// ✅ Steadfast API Routes
-Route::get('/steadfast/check-balance', [SteadfastController::class, 'checkBalance']); 
-Route::post('/steadfast/store-credentials', [SteadfastController::class, 'storeCredentials']); 
-
-
-
-
-
-
-
-// 🔹 Location Match Route
+// ✅ Location Search API
 Route::get('/location/match', [LocationSearchController::class, 'matchLocation']);
 
-// 🔹 Courier Check
+// ✅ Courier Check
 Route::post('/courier-check', [CourierCheckController::class, 'checkCourier']);
 
-// 🔹 Public API Documentation
+// ✅ Debugging - Get Users (Restricted to Admin)
+Route::middleware(['auth:sanctum', 'role:admin'])->get('/users', function () {
+    return response()->json(User::select('id', 'username')->get());
+});
+
+// ✅ Public API Version Endpoint
+Route::get('/version', fn() => response()->json(['framework' => app()->version()]));
+
+// ✅ API Documentation (Swagger)
 /**
  * @OA\Info(
  *      title="Laravel API Documentation",
@@ -66,63 +78,12 @@ Route::post('/courier-check', [CourierCheckController::class, 'checkCourier']);
  *      type="http",
  *      scheme="bearer",
  *      bearerFormat="JWT",
- *      description="Enter your Bearer token in the field"
+ *      description="Enter your Bearer token in the field. Example: Bearer your_api_token_here"
  * )
  */
 
-// 🔹 Public Routes (No authentication required)
-/**
- * @OA\Post(
- *     path="/api/login",
- *     summary="User Login",
- *     description="Authenticate user and return an access token.",
- *     operationId="loginUser",
- *     tags={"Authentication"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"email","password"},
- *             @OA\Property(property="email", type="string", example="user@example.com"),
- *             @OA\Property(property="password", type="string", example="password123")
- *         ),
- *     ),
- *     @OA\Response(response=200, description="Successful login"),
- *     @OA\Response(response=401, description="Invalid credentials")
- * )
- */
-Route::post('/login', [ApiAuthController::class, 'login']);
-
-
-Route::get('/version', fn() => response()->json(['framework' => app()->version()]));
-
-// 🔹 Protected API Routes (Require authentication)
-/**
- * @OA\Get(
- *     path="/api/user",
- *     summary="Get Authenticated User",
- *     description="Returns the authenticated user details",
- *     operationId="getAuthenticatedUser",
- *     tags={"User"},
- *     security={{ "bearerAuth": {} }},
- *     @OA\Response(response=200, description="Authenticated user details"),
- *     @OA\Response(response=401, description="Unauthenticated")
- * )
- */
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [ApiAuthController::class, 'user']);  
-    Route::post('/logout', [ApiAuthController::class, 'logout']);
-    
-
+// ✅ Handle 404 API Routes
+Route::fallback(function () {
+    Log::warning("🚨 Unknown API request: " . request()->fullUrl());
+    return response()->json(['message' => 'API route not found'], 404);
 });
-
-
-
-
-// 🔹 Fallback Route (Handles 404 for unknown API endpoints)
-Route::fallback(fn() => response()->json(['message' => 'API route not found'], 404));
-
-// 🔹 Get All Users (Debugging)
-Route::get('/users', function () {
-    return response()->json(User::select('id', 'username')->get());
-});
-
